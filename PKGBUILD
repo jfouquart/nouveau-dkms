@@ -17,8 +17,8 @@ source=(
   "dkms.conf"
   "nouveau.conf"
 )
-sha256sums=('1426cea7f5c4959cfcaec78b4974cde3071f51eb9fdf9beedf38efae0bc6b9ad'
-            '7ed52cec77e29419b19165cd2e7b2d876831f91cf4227ab9385fedb87a24dbfa'
+sha256sums=('07ed99d8a366ae0f906af52dda33857f4c27135151bc505918d4c9c908c03ce5'
+            'ee4d2889064f4a9d9bad111cda5f5b6fff27ca7c6e81f6362fc19ff9dcb7e9ff'
             '7f0d3d86a1551d4f1775d6dea33568f04d59dbf38faa7e9d50c0b327cfc327a6'
             '326efac21bf858f7be0e41b21f2c585bfd1ef5b18dad9cce022685a4623bb090')
 

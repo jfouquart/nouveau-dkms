@@ -1,6 +1,6 @@
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/dispnv50/disp.c nouveau-source/dispnv50/disp.c
---- orig/dispnv50/disp.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/dispnv50/disp.c	2026-10-27 15:57:29.195027520 +0200
+--- orig/dispnv50/disp.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/dispnv50/disp.c	2026-10-30 17:34:17.145288660 +0100
 @@ -228,6 +228,10 @@
  static int nv50_dmac_vram_pushbuf = -1;
  module_param_named(kms_vram_pushbuf, nv50_dmac_vram_pushbuf, int, 0400);
@@ -32,8 +32,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	nv50_audio_component_init(drm);
  
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_backlight.c nouveau-source/nouveau_backlight.c
---- orig/nouveau_backlight.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nouveau_backlight.c	2026-10-27 15:57:29.196741479 +0200
+--- orig/nouveau_backlight.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nouveau_backlight.c	2026-10-30 17:34:17.157579530 +0100
 @@ -344,10 +344,7 @@
  		goto fail_alloc;
  	}
@@ -47,8 +47,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	if (!nouveau_get_backlight_name(backlight_name, bl)) {
  		NV_ERROR(drm, "Failed to retrieve a unique name for the backlight interface\n");
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_bo.c nouveau-source/nouveau_bo.c
---- orig/nouveau_bo.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nouveau_bo.c	2026-10-27 15:57:29.197164584 +0200
+--- orig/nouveau_bo.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nouveau_bo.c	2026-10-30 17:34:17.263581326 +0100
 @@ -202,6 +202,8 @@
  	} else {
  		*size = roundup_64(*size, (1 << nvbo->page));
@@ -59,8 +59,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  
  	*size = roundup_64(*size, PAGE_SIZE);
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_debugfs.c nouveau-source/nouveau_debugfs.c
---- orig/nouveau_debugfs.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nouveau_debugfs.c	2026-10-27 15:57:29.215686879 +0200
+--- orig/nouveau_debugfs.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nouveau_debugfs.c	2026-10-30 17:34:17.300318897 +0100
 @@ -29,6 +29,8 @@
   */
  
@@ -95,8 +95,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  }
  
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_display.c nouveau-source/nouveau_display.c
---- orig/nouveau_display.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nouveau_display.c	2026-10-27 15:57:29.216575562 +0200
+--- orig/nouveau_display.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nouveau_display.c	2026-10-30 17:39:42.132151312 +0100
 @@ -25,6 +25,7 @@
   */
  
@@ -105,34 +105,896 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  
  #include <drm/drm_atomic.h>
  #include <drm/drm_atomic_helper.h>
-@@ -764,7 +765,11 @@
+@@ -765,7 +766,11 @@
  {
  	struct nouveau_display *disp = nouveau_display(dev);
  
 +#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 55)
-+	drm_client_dev_suspend(dev);
+ 	drm_client_dev_suspend(dev);
 +#else
- 	drm_client_dev_suspend(dev, false);
++	drm_client_dev_suspend(dev, false);
 +#endif
  
  	if (drm_drv_uses_atomic_modeset(dev)) {
  		if (!runtime) {
-@@ -795,7 +800,11 @@
+@@ -796,7 +801,11 @@
  		}
  	}
  
 +#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 55)
-+	drm_client_dev_resume(dev);
+ 	drm_client_dev_resume(dev);
 +#else
- 	drm_client_dev_resume(dev, false);
++	drm_client_dev_resume(dev, false);
 +#endif
  }
  
  int
+diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_display.c.orig nouveau-source/nouveau_display.c.orig
+--- orig/nouveau_display.c.orig	1970-01-01 01:00:00.000000000 +0100
++++ nouveau-source/nouveau_display.c.orig	2026-10-16 02:26:10.000000000 +0200
+@@ -0,0 +1,828 @@
++/*
++ * Copyright (C) 2008 Maarten Maathuis.
++ * All Rights Reserved.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining
++ * a copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sublicense, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial
++ * portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
++ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ *
++ */
++
++#include <acpi/video.h>
++
++#include <drm/drm_atomic.h>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_client_event.h>
++#include <drm/drm_crtc_helper.h>
++#include <drm/drm_dumb_buffers.h>
++#include <drm/drm_fourcc.h>
++#include <drm/drm_gem_framebuffer_helper.h>
++#include <drm/drm_probe_helper.h>
++#include <drm/drm_vblank.h>
++
++#include "nouveau_crtc.h"
++#include "nouveau_gem.h"
++#include "nouveau_connector.h"
++#include "nv50_display.h"
++
++#include <nvif/class.h>
++#include <nvif/if0011.h>
++#include <nvif/if0013.h>
++#include <dispnv50/crc.h>
++#include <dispnv50/tile.h>
++
++int
++nouveau_display_vblank_enable(struct drm_crtc *crtc)
++{
++	struct nouveau_crtc *nv_crtc;
++
++	nv_crtc = nouveau_crtc(crtc);
++	nvif_event_allow(&nv_crtc->vblank);
++
++	return 0;
++}
++
++void
++nouveau_display_vblank_disable(struct drm_crtc *crtc)
++{
++	struct nouveau_crtc *nv_crtc;
++
++	nv_crtc = nouveau_crtc(crtc);
++	nvif_event_block(&nv_crtc->vblank);
++}
++
++static inline int
++calc(int blanks, int blanke, int total, int line)
++{
++	if (blanke >= blanks) {
++		if (line >= blanks)
++			line -= total;
++	} else {
++		if (line >= blanks)
++			line -= total;
++		line -= blanke + 1;
++	}
++	return line;
++}
++
++static bool
++nouveau_display_scanoutpos_head(struct drm_crtc *crtc, int *vpos, int *hpos,
++				ktime_t *stime, ktime_t *etime)
++{
++	struct drm_vblank_crtc *vblank = drm_crtc_vblank_crtc(crtc);
++	struct nvif_head *head = &nouveau_crtc(crtc)->head;
++	struct nvif_head_scanoutpos_v0 args;
++	int retry = 20;
++	bool ret = false;
++
++	args.version = 0;
++
++	do {
++		ret = nvif_mthd(&head->object, NVIF_HEAD_V0_SCANOUTPOS, &args, sizeof(args));
++		if (ret != 0)
++			return false;
++
++		if (args.vline) {
++			ret = true;
++			break;
++		}
++
++		if (retry) ndelay(vblank->linedur_ns);
++	} while (retry--);
++
++	*hpos = args.hline;
++	*vpos = calc(args.vblanks, args.vblanke, args.vtotal, args.vline);
++	if (stime) *stime = ns_to_ktime(args.time[0]);
++	if (etime) *etime = ns_to_ktime(args.time[1]);
++
++	return ret;
++}
++
++bool
++nouveau_display_scanoutpos(struct drm_crtc *crtc,
++			   bool in_vblank_irq, int *vpos, int *hpos,
++			   ktime_t *stime, ktime_t *etime,
++			   const struct drm_display_mode *mode)
++{
++	return nouveau_display_scanoutpos_head(crtc, vpos, hpos,
++					       stime, etime);
++}
++
++static const struct drm_framebuffer_funcs nouveau_framebuffer_funcs = {
++	.destroy = drm_gem_fb_destroy,
++	.create_handle = drm_gem_fb_create_handle,
++};
++
++static void
++nouveau_decode_mod(struct nouveau_drm *drm,
++		   uint64_t modifier,
++		   uint32_t *tile_mode,
++		   uint8_t *kind)
++{
++	struct nouveau_display *disp = nouveau_display(drm->dev);
++	BUG_ON(!tile_mode || !kind);
++
++	if (modifier == DRM_FORMAT_MOD_LINEAR) {
++		/* tile_mode will not be used in this case */
++		*tile_mode = 0;
++		*kind = 0;
++	} else {
++		/*
++		 * Extract the block height and kind from the corresponding
++		 * modifier fields.  See drm_fourcc.h for details.
++		 */
++
++		if ((modifier & (0xffull << 12)) == 0ull) {
++			/* Legacy modifier.  Translate to this dev's 'kind.' */
++			modifier |= disp->format_modifiers[0] & (0xffull << 12);
++		}
++
++		*tile_mode = (uint32_t)(modifier & 0xF);
++		*kind = (uint8_t)((modifier >> 12) & 0xFF);
++
++		if (drm->client.device.info.chipset >= 0xc0)
++			*tile_mode <<= 4;
++	}
++}
++
++void
++nouveau_framebuffer_get_layout(struct drm_framebuffer *fb,
++			       uint32_t *tile_mode,
++			       uint8_t *kind)
++{
++	if (fb->flags & DRM_MODE_FB_MODIFIERS) {
++		struct nouveau_drm *drm = nouveau_drm(fb->dev);
++
++		nouveau_decode_mod(drm, fb->modifier, tile_mode, kind);
++	} else {
++		const struct nouveau_bo *nvbo = nouveau_gem_object(fb->obj[0]);
++
++		*tile_mode = nvbo->mode;
++		*kind = nvbo->kind;
++	}
++}
++
++static const u64 legacy_modifiers[] = {
++	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(0),
++	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(1),
++	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(2),
++	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(3),
++	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(4),
++	DRM_FORMAT_MOD_NVIDIA_16BX2_BLOCK(5),
++	DRM_FORMAT_MOD_INVALID
++};
++
++static int
++nouveau_validate_decode_mod(struct nouveau_drm *drm,
++			    uint64_t modifier,
++			    uint32_t *tile_mode,
++			    uint8_t *kind)
++{
++	struct nouveau_display *disp = nouveau_display(drm->dev);
++	int mod;
++
++	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_TESLA) {
++		return -EINVAL;
++	}
++
++	BUG_ON(!disp->format_modifiers);
++
++	for (mod = 0;
++	     (disp->format_modifiers[mod] != DRM_FORMAT_MOD_INVALID) &&
++	     (disp->format_modifiers[mod] != modifier);
++	     mod++);
++
++	if (disp->format_modifiers[mod] == DRM_FORMAT_MOD_INVALID) {
++		for (mod = 0;
++		     (legacy_modifiers[mod] != DRM_FORMAT_MOD_INVALID) &&
++		     (legacy_modifiers[mod] != modifier);
++		     mod++);
++		if (legacy_modifiers[mod] == DRM_FORMAT_MOD_INVALID)
++			return -EINVAL;
++	}
++
++	nouveau_decode_mod(drm, modifier, tile_mode, kind);
++
++	return 0;
++}
++
++static int
++nouveau_check_bl_size(struct nouveau_drm *drm, struct nouveau_bo *nvbo,
++		      uint32_t offset, uint32_t stride, uint32_t h,
++		      uint32_t tile_mode)
++{
++	uint32_t gob_size, bw, bh, gobs_in_block;
++	uint64_t bl_size;
++
++	BUG_ON(drm->client.device.info.family < NV_DEVICE_INFO_V0_TESLA);
++
++	if (nouveau_check_tile_mode(tile_mode, drm->client.device.info.chipset))
++		return -EINVAL;
++
++	gobs_in_block = nouveau_get_gobs_in_block(tile_mode, drm->client.device.info.chipset);
++	bw = nouveau_get_width_in_blocks(stride);
++	bh = nouveau_get_height_in_blocks(h, gobs_in_block, drm->client.device.info.family);
++	gob_size = nouveau_get_gob_size(drm->client.device.info.family);
++
++	bl_size = bw * bh * gobs_in_block * gob_size;
++
++	DRM_DEBUG_KMS("offset=%u stride=%u h=%u gobs_in_block=%u bw=%u bh=%u gob_size=%u bl_size=%llu size=%zu\n",
++		      offset, stride, h, gobs_in_block, bw, bh, gob_size,
++		      bl_size, nvbo->bo.base.size);
++
++	if (bl_size + offset > nvbo->bo.base.size)
++		return -ERANGE;
++
++	return 0;
++}
++
++int
++nouveau_framebuffer_new(struct drm_device *dev,
++			const struct drm_format_info *info,
++			const struct drm_mode_fb_cmd2 *mode_cmd,
++			struct drm_gem_object *gem,
++			struct drm_framebuffer **pfb)
++{
++	struct nouveau_drm *drm = nouveau_drm(dev);
++	struct nouveau_bo *nvbo = nouveau_gem_object(gem);
++	struct drm_framebuffer *fb;
++	unsigned int height, i;
++	uint32_t tile_mode;
++	uint8_t kind;
++	int ret;
++
++        /* YUV overlays have special requirements pre-NV50 */
++	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_TESLA &&
++
++	    (mode_cmd->pixel_format == DRM_FORMAT_YUYV ||
++	     mode_cmd->pixel_format == DRM_FORMAT_UYVY ||
++	     mode_cmd->pixel_format == DRM_FORMAT_NV12 ||
++	     mode_cmd->pixel_format == DRM_FORMAT_NV21) &&
++	    (mode_cmd->pitches[0] & 0x3f || /* align 64 */
++	     mode_cmd->pitches[0] >= 0x10000 || /* at most 64k pitch */
++	     (mode_cmd->pitches[1] && /* pitches for planes must match */
++	      mode_cmd->pitches[0] != mode_cmd->pitches[1]))) {
++		DRM_DEBUG_KMS("Unsuitable framebuffer: format: %p4cc; pitches: 0x%x\n 0x%x\n",
++			      &mode_cmd->pixel_format,
++			      mode_cmd->pitches[0], mode_cmd->pitches[1]);
++		return -EINVAL;
++	}
++
++	if (mode_cmd->flags & DRM_MODE_FB_MODIFIERS) {
++		if (nouveau_validate_decode_mod(drm, mode_cmd->modifier[0],
++						&tile_mode, &kind)) {
++			DRM_DEBUG_KMS("Unsupported modifier: 0x%llx\n",
++				      mode_cmd->modifier[0]);
++			return -EINVAL;
++		}
++	} else {
++		tile_mode = nvbo->mode;
++		kind = nvbo->kind;
++	}
++
++	for (i = 0; i < info->num_planes; i++) {
++		height = drm_format_info_plane_height(info,
++						      mode_cmd->height,
++						      i);
++
++		if (kind) {
++			ret = nouveau_check_bl_size(drm, nvbo,
++						    mode_cmd->offsets[i],
++						    mode_cmd->pitches[i],
++						    height, tile_mode);
++			if (ret)
++				return ret;
++		} else {
++			uint32_t size = mode_cmd->pitches[i] * height;
++
++			if (size + mode_cmd->offsets[i] > nvbo->bo.base.size)
++				return -ERANGE;
++		}
++	}
++
++	if (!(fb = *pfb = kzalloc_obj(*fb)))
++		return -ENOMEM;
++
++	drm_helper_mode_fill_fb_struct(dev, fb, info, mode_cmd);
++	fb->obj[0] = gem;
++
++	ret = drm_framebuffer_init(dev, fb, &nouveau_framebuffer_funcs);
++	if (ret)
++		kfree(fb);
++	return ret;
++}
++
++struct drm_framebuffer *
++nouveau_user_framebuffer_create(struct drm_device *dev,
++				struct drm_file *file_priv,
++				const struct drm_format_info *info,
++				const struct drm_mode_fb_cmd2 *mode_cmd)
++{
++	struct drm_framebuffer *fb;
++	struct drm_gem_object *gem;
++	int ret;
++
++	gem = drm_gem_object_lookup(file_priv, mode_cmd->handles[0]);
++	if (!gem)
++		return ERR_PTR(-ENOENT);
++
++	ret = nouveau_framebuffer_new(dev, info, mode_cmd, gem, &fb);
++	if (ret == 0)
++		return fb;
++
++	drm_gem_object_put(gem);
++	return ERR_PTR(ret);
++}
++
++static const struct drm_mode_config_funcs nouveau_mode_config_funcs = {
++	.fb_create = nouveau_user_framebuffer_create,
++};
++
++
++struct nouveau_drm_prop_enum_list {
++	u8 gen_mask;
++	int type;
++	char *name;
++};
++
++static struct nouveau_drm_prop_enum_list underscan[] = {
++	{ 6, UNDERSCAN_AUTO, "auto" },
++	{ 6, UNDERSCAN_OFF, "off" },
++	{ 6, UNDERSCAN_ON, "on" },
++	{}
++};
++
++static struct nouveau_drm_prop_enum_list dither_mode[] = {
++	{ 7, DITHERING_MODE_AUTO, "auto" },
++	{ 7, DITHERING_MODE_OFF, "off" },
++	{ 1, DITHERING_MODE_ON, "on" },
++	{ 6, DITHERING_MODE_STATIC2X2, "static 2x2" },
++	{ 6, DITHERING_MODE_DYNAMIC2X2, "dynamic 2x2" },
++	{ 4, DITHERING_MODE_TEMPORAL, "temporal" },
++	{}
++};
++
++static struct nouveau_drm_prop_enum_list dither_depth[] = {
++	{ 6, DITHERING_DEPTH_AUTO, "auto" },
++	{ 6, DITHERING_DEPTH_6BPC, "6 bpc" },
++	{ 6, DITHERING_DEPTH_8BPC, "8 bpc" },
++	{}
++};
++
++#define PROP_ENUM(p,gen,n,list) do {                                           \
++	struct nouveau_drm_prop_enum_list *l = (list);                         \
++	int c = 0;                                                             \
++	while (l->gen_mask) {                                                  \
++		if (l->gen_mask & (1 << (gen)))                                \
++			c++;                                                   \
++		l++;                                                           \
++	}                                                                      \
++	if (c) {                                                               \
++		p = drm_property_create(dev, DRM_MODE_PROP_ENUM, n, c);        \
++		l = (list);                                                    \
++		while (p && l->gen_mask) {                                     \
++			if (l->gen_mask & (1 << (gen))) {                      \
++				drm_property_add_enum(p, l->type, l->name);    \
++			}                                                      \
++			l++;                                                   \
++		}                                                              \
++	}                                                                      \
++} while(0)
++
++void
++nouveau_display_hpd_resume(struct nouveau_drm *drm)
++{
++	if (drm->headless)
++		return;
++
++	spin_lock_irq(&drm->hpd_lock);
++	drm->hpd_pending = ~0;
++	spin_unlock_irq(&drm->hpd_lock);
++
++	schedule_work(&drm->hpd_work);
++}
++
++static void
++nouveau_display_hpd_work(struct work_struct *work)
++{
++	struct nouveau_drm *drm = container_of(work, typeof(*drm), hpd_work);
++	struct drm_device *dev = drm->dev;
++	struct drm_connector *connector;
++	struct drm_connector_list_iter conn_iter;
++	u32 pending;
++	int changed = 0;
++	struct drm_connector *first_changed_connector = NULL;
++
++	pm_runtime_get_sync(dev->dev);
++
++	spin_lock_irq(&drm->hpd_lock);
++	pending = drm->hpd_pending;
++	drm->hpd_pending = 0;
++	spin_unlock_irq(&drm->hpd_lock);
++
++	/* Nothing to do, exit early without updating the last busy counter */
++	if (!pending)
++		goto noop;
++
++	mutex_lock(&dev->mode_config.mutex);
++	drm_connector_list_iter_begin(dev, &conn_iter);
++
++	nouveau_for_each_non_mst_connector_iter(connector, &conn_iter) {
++		struct nouveau_connector *nv_connector = nouveau_connector(connector);
++		enum drm_connector_status old_status = connector->status;
++		u64 bits, old_epoch_counter = connector->epoch_counter;
++
++		if (!(pending & drm_connector_mask(connector)))
++			continue;
++
++		spin_lock_irq(&drm->hpd_lock);
++		bits = nv_connector->hpd_pending;
++		nv_connector->hpd_pending = 0;
++		spin_unlock_irq(&drm->hpd_lock);
++
++		drm_dbg_kms(dev, "[CONNECTOR:%d:%s] plug:%d unplug:%d irq:%d\n",
++			    connector->base.id, connector->name,
++			    !!(bits & NVIF_CONN_EVENT_V0_PLUG),
++			    !!(bits & NVIF_CONN_EVENT_V0_UNPLUG),
++			    !!(bits & NVIF_CONN_EVENT_V0_IRQ));
++
++		if (bits & NVIF_CONN_EVENT_V0_IRQ) {
++			if (nouveau_dp_link_check(nv_connector))
++				continue;
++		}
++
++		connector->status = drm_helper_probe_detect(connector, NULL, false);
++		if (old_epoch_counter == connector->epoch_counter)
++			continue;
++
++		changed++;
++		if (!first_changed_connector) {
++			drm_connector_get(connector);
++			first_changed_connector = connector;
++		}
++
++		drm_dbg_kms(dev, "[CONNECTOR:%d:%s] status updated from %s to %s (epoch counter %llu->%llu)\n",
++			    connector->base.id, connector->name,
++			    drm_get_connector_status_name(old_status),
++			    drm_get_connector_status_name(connector->status),
++			    old_epoch_counter, connector->epoch_counter);
++	}
++
++	drm_connector_list_iter_end(&conn_iter);
++	mutex_unlock(&dev->mode_config.mutex);
++
++	if (changed == 1)
++		drm_kms_helper_connector_hotplug_event(first_changed_connector);
++	else if (changed > 0)
++		drm_kms_helper_hotplug_event(dev);
++
++	if (first_changed_connector)
++		drm_connector_put(first_changed_connector);
++
++	pm_runtime_mark_last_busy(dev->dev);
++noop:
++	pm_runtime_put_autosuspend(dev->dev);
++}
++
++#ifdef CONFIG_ACPI
++
++static int
++nouveau_display_acpi_ntfy(struct notifier_block *nb, unsigned long val,
++			  void *data)
++{
++	struct nouveau_drm *drm = container_of(nb, typeof(*drm), acpi_nb);
++	struct acpi_bus_event *info = data;
++	int ret;
++
++	if (!strcmp(info->device_class, ACPI_VIDEO_CLASS)) {
++		if (info->type == ACPI_VIDEO_NOTIFY_PROBE) {
++			ret = pm_runtime_get(drm->dev->dev);
++			if (ret == 1 || ret == -EACCES) {
++				/* If the GPU is already awake, or in a state
++				 * where we can't wake it up, it can handle
++				 * it's own hotplug events.
++				 */
++				pm_runtime_put_autosuspend(drm->dev->dev);
++			} else if (ret == 0 || ret == -EINPROGRESS) {
++				/* We've started resuming the GPU already, so
++				 * it will handle scheduling a full reprobe
++				 * itself
++				 */
++				NV_DEBUG(drm, "ACPI requested connector reprobe\n");
++				pm_runtime_put_noidle(drm->dev->dev);
++			} else {
++				NV_WARN(drm, "Dropped ACPI reprobe event due to RPM error: %d\n",
++					ret);
++			}
++
++			/* acpi-video should not generate keypresses for this */
++			return NOTIFY_BAD;
++		}
++	}
++
++	return NOTIFY_DONE;
++}
++#endif
++
++int
++nouveau_display_init(struct drm_device *dev, bool resume, bool runtime)
++{
++	struct nouveau_display *disp = nouveau_display(dev);
++	struct drm_connector *connector;
++	struct drm_connector_list_iter conn_iter;
++	int ret;
++
++	/*
++	 * Enable hotplug interrupts (done as early as possible, since we need
++	 * them for MST)
++	 */
++	drm_connector_list_iter_begin(dev, &conn_iter);
++	nouveau_for_each_non_mst_connector_iter(connector, &conn_iter) {
++		struct nouveau_connector *conn = nouveau_connector(connector);
++		nvif_event_allow(&conn->hpd);
++		nvif_event_allow(&conn->irq);
++	}
++	drm_connector_list_iter_end(&conn_iter);
++
++	ret = disp->init(dev, resume, runtime);
++	if (ret)
++		return ret;
++
++	/* enable connector detection and polling for connectors without HPD
++	 * support
++	 */
++	drm_kms_helper_poll_enable(dev);
++
++	return ret;
++}
++
++void
++nouveau_display_fini(struct drm_device *dev, bool suspend, bool runtime)
++{
++	struct nouveau_display *disp = nouveau_display(dev);
++	struct nouveau_drm *drm = nouveau_drm(dev);
++	struct drm_connector *connector;
++	struct drm_connector_list_iter conn_iter;
++
++	if (!suspend) {
++		if (drm_drv_uses_atomic_modeset(dev))
++			drm_atomic_helper_shutdown(dev);
++		else
++			drm_helper_force_disable_all(dev);
++	}
++
++	/* disable hotplug interrupts */
++	drm_connector_list_iter_begin(dev, &conn_iter);
++	nouveau_for_each_non_mst_connector_iter(connector, &conn_iter) {
++		struct nouveau_connector *conn = nouveau_connector(connector);
++		nvif_event_block(&conn->irq);
++		nvif_event_block(&conn->hpd);
++	}
++	drm_connector_list_iter_end(&conn_iter);
++
++	if (!runtime && !drm->headless)
++		cancel_work_sync(&drm->hpd_work);
++
++	drm_kms_helper_poll_disable(dev);
++	disp->fini(dev, runtime, suspend);
++}
++
++static void
++nouveau_display_create_properties(struct drm_device *dev)
++{
++	struct nouveau_display *disp = nouveau_display(dev);
++	int gen;
++
++	if (disp->disp.object.oclass < NV50_DISP)
++		gen = 0;
++	else
++	if (disp->disp.object.oclass < GF110_DISP)
++		gen = 1;
++	else
++		gen = 2;
++
++	PROP_ENUM(disp->dithering_mode, gen, "dithering mode", dither_mode);
++	PROP_ENUM(disp->dithering_depth, gen, "dithering depth", dither_depth);
++	PROP_ENUM(disp->underscan_property, gen, "underscan", underscan);
++
++	disp->underscan_hborder_property =
++		drm_property_create_range(dev, 0, "underscan hborder", 0, 128);
++
++	disp->underscan_vborder_property =
++		drm_property_create_range(dev, 0, "underscan vborder", 0, 128);
++
++	if (gen < 1)
++		return;
++
++	/* -90..+90 */
++	disp->vibrant_hue_property =
++		drm_property_create_range(dev, 0, "vibrant hue", 0, 180);
++
++	/* -100..+100 */
++	disp->color_vibrance_property =
++		drm_property_create_range(dev, 0, "color vibrance", 0, 200);
++}
++
++int
++nouveau_display_create(struct drm_device *dev)
++{
++	struct nouveau_drm *drm = nouveau_drm(dev);
++	struct nouveau_display *disp;
++	int ret;
++
++	disp = drm->display = kzalloc_obj(*disp);
++	if (!disp)
++		return -ENOMEM;
++
++	drm_mode_config_init(dev);
++	drm_mode_create_scaling_mode_property(dev);
++	drm_mode_create_dvi_i_properties(dev);
++
++	dev->mode_config.funcs = &nouveau_mode_config_funcs;
++
++	dev->mode_config.min_width = 0;
++	dev->mode_config.min_height = 0;
++	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_CELSIUS) {
++		dev->mode_config.max_width = 2048;
++		dev->mode_config.max_height = 2048;
++	} else
++	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_TESLA) {
++		dev->mode_config.max_width = 4096;
++		dev->mode_config.max_height = 4096;
++	} else
++	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_FERMI) {
++		dev->mode_config.max_width = 8192;
++		dev->mode_config.max_height = 8192;
++	} else {
++		dev->mode_config.max_width = 16384;
++		dev->mode_config.max_height = 16384;
++	}
++
++	dev->mode_config.preferred_depth = 24;
++	dev->mode_config.prefer_shadow = 1;
++
++	if (drm->client.device.info.chipset < 0x11)
++		dev->mode_config.async_page_flip = false;
++	else
++		dev->mode_config.async_page_flip = true;
++
++	drm_kms_helper_poll_init(dev);
++	drm_kms_helper_poll_disable(dev);
++
++	if (nouveau_modeset != 2) {
++		ret = nvif_disp_ctor(&drm->client.device, "kmsDisp", 0, &disp->disp);
++		/* no display hw */
++		if (ret == -ENODEV) {
++			ret = 0;
++			drm->headless = true;
++			goto disp_create_err;
++		}
++
++		if (!ret && (disp->disp.outp_mask || drm->vbios.dcb.entries)) {
++			nouveau_display_create_properties(dev);
++			if (disp->disp.object.oclass < NV50_DISP) {
++				dev->mode_config.fb_modifiers_not_supported = true;
++				ret = nv04_display_create(dev);
++			} else {
++				ret = nv50_display_create(dev);
++			}
++		}
++	} else {
++		ret = 0;
++	}
++
++	if (ret)
++		goto disp_create_err;
++
++	drm_mode_config_reset(dev);
++
++	if (dev->mode_config.num_crtc) {
++		ret = drm_vblank_init(dev, dev->mode_config.num_crtc);
++		if (ret)
++			goto vblank_err;
++
++		if (disp->disp.object.oclass >= NV50_DISP)
++			nv50_crc_init(dev);
++	}
++
++	INIT_WORK(&drm->hpd_work, nouveau_display_hpd_work);
++	spin_lock_init(&drm->hpd_lock);
++#ifdef CONFIG_ACPI
++	drm->acpi_nb.notifier_call = nouveau_display_acpi_ntfy;
++	register_acpi_notifier(&drm->acpi_nb);
++#endif
++
++	return 0;
++
++vblank_err:
++	disp->dtor(dev);
++disp_create_err:
++	drm_kms_helper_poll_fini(dev);
++	drm_mode_config_cleanup(dev);
++	return ret;
++}
++
++void
++nouveau_display_destroy(struct drm_device *dev)
++{
++	struct nouveau_display *disp = nouveau_display(dev);
++	struct nouveau_drm *drm = nouveau_drm(dev);
++
++#ifdef CONFIG_ACPI
++	unregister_acpi_notifier(&drm->acpi_nb);
++#endif
++
++	drm_kms_helper_poll_fini(dev);
++	drm_mode_config_cleanup(dev);
++
++	if (disp->dtor)
++		disp->dtor(dev);
++
++	nvif_disp_dtor(&disp->disp);
++
++	drm->display = NULL;
++	kfree(disp);
++}
++
++int
++nouveau_display_suspend(struct drm_device *dev, bool runtime)
++{
++	struct nouveau_display *disp = nouveau_display(dev);
++
++	drm_client_dev_suspend(dev);
++
++	if (drm_drv_uses_atomic_modeset(dev)) {
++		if (!runtime) {
++			disp->suspend = drm_atomic_helper_suspend(dev);
++			if (IS_ERR(disp->suspend)) {
++				int ret = PTR_ERR(disp->suspend);
++				disp->suspend = NULL;
++				return ret;
++			}
++		}
++	}
++
++	nouveau_display_fini(dev, true, runtime);
++	return 0;
++}
++
++void
++nouveau_display_resume(struct drm_device *dev, bool runtime)
++{
++	struct nouveau_display *disp = nouveau_display(dev);
++
++	nouveau_display_init(dev, true, runtime);
++
++	if (drm_drv_uses_atomic_modeset(dev)) {
++		if (disp->suspend) {
++			drm_atomic_helper_resume(dev, disp->suspend);
++			disp->suspend = NULL;
++		}
++	}
++
++	drm_client_dev_resume(dev);
++}
++
++int
++nouveau_display_dumb_create(struct drm_file *file_priv, struct drm_device *dev,
++			    struct drm_mode_create_dumb *args)
++{
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	struct nouveau_bo *bo;
++	uint32_t domain;
++	int ret;
++
++	ret = drm_mode_size_dumb(dev, args, SZ_256, 0);
++	if (ret)
++		return ret;
++
++	/* Use VRAM if there is any ; otherwise fallback to system memory */
++	if (nouveau_drm(dev)->client.device.info.ram_size != 0)
++		domain = NOUVEAU_GEM_DOMAIN_VRAM;
++	else
++		domain = NOUVEAU_GEM_DOMAIN_GART;
++
++	ret = nouveau_gem_new(cli, args->size, 0, domain, 0, 0, &bo);
++	if (ret)
++		return ret;
++
++	ret = drm_gem_handle_create(file_priv, &bo->bo.base, &args->handle);
++	drm_gem_object_put(&bo->bo.base);
++	return ret;
++}
+diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_display.c.rej nouveau-source/nouveau_display.c.rej
+--- orig/nouveau_display.c.rej	1970-01-01 01:00:00.000000000 +0100
++++ nouveau-source/nouveau_display.c.rej	2026-10-30 17:34:17.346840085 +0100
+@@ -0,0 +1,26 @@
++--- nouveau_display.c	2026-06-12 01:03:26.000000000 +0300
+++++ nouveau_display.c	2026-10-27 15:57:29.216575562 +0200
++@@ -765,7 +766,11 @@
++ {
++ 	struct nouveau_display *disp = nouveau_display(dev);
++ 
+++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 55)
+++	drm_client_dev_suspend(dev);
+++#else
++ 	drm_client_dev_suspend(dev, false);
+++#endif
++ 
++ 	if (drm_drv_uses_atomic_modeset(dev)) {
++ 		if (!runtime) {
++@@ -796,7 +801,11 @@
++ 		}
++ 	}
++ 
+++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 55)
+++	drm_client_dev_resume(dev);
+++#else
++ 	drm_client_dev_resume(dev, false);
+++#endif
++ }
++ 
++ int
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_gem.c nouveau-source/nouveau_gem.c
---- orig/nouveau_gem.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nouveau_gem.c	2026-10-27 15:57:29.217742454 +0200
-@@ -349,6 +349,10 @@
+--- orig/nouveau_gem.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nouveau_gem.c	2026-10-30 17:34:17.347125841 +0100
+@@ -358,6 +358,10 @@
  	 */
  	nouveau_cli_disable_uvmm_noinit(cli);
  
@@ -143,9 +1005,1070 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	ret = nouveau_gem_new(cli, req->info.size, req->align,
  			      req->info.domain, req->info.tile_mode,
  			      req->info.tile_flags, &nvbo);
+diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nouveau_gem.c.orig nouveau-source/nouveau_gem.c.orig
+--- orig/nouveau_gem.c.orig	1970-01-01 01:00:00.000000000 +0100
++++ nouveau-source/nouveau_gem.c.orig	2026-10-16 02:26:10.000000000 +0200
+@@ -0,0 +1,1057 @@
++/*
++ * Copyright (C) 2008 Ben Skeggs.
++ * All Rights Reserved.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining
++ * a copy of this software and associated documentation files (the
++ * "Software"), to deal in the Software without restriction, including
++ * without limitation the rights to use, copy, modify, merge, publish,
++ * distribute, sublicense, and/or sell copies of the Software, and to
++ * permit persons to whom the Software is furnished to do so, subject to
++ * the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the
++ * next paragraph) shall be included in all copies or substantial
++ * portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++ * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
++ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
++ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
++ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++ *
++ */
++
++#include <drm/drm_gem_ttm_helper.h>
++
++#include "nouveau_drv.h"
++#include "nouveau_dma.h"
++#include "nouveau_fence.h"
++#include "nouveau_abi16.h"
++
++#include "nouveau_ttm.h"
++#include "nouveau_gem.h"
++#include "nouveau_mem.h"
++#include "nouveau_vmm.h"
++
++#include <nvif/class.h>
++#include <nvif/push206e.h>
++
++static vm_fault_t nouveau_ttm_fault(struct vm_fault *vmf)
++{
++	struct vm_area_struct *vma = vmf->vma;
++	struct ttm_buffer_object *bo = vma->vm_private_data;
++	pgprot_t prot;
++	vm_fault_t ret;
++
++	ret = ttm_bo_vm_reserve(bo, vmf);
++	if (ret)
++		return ret;
++
++	ret = nouveau_ttm_fault_reserve_notify(bo);
++	if (ret)
++		goto error_unlock;
++
++	nouveau_bo_del_io_reserve_lru(bo);
++	prot = vm_get_page_prot(vma->vm_flags);
++	ret = ttm_bo_vm_fault_reserved(vmf, prot, TTM_BO_VM_NUM_PREFAULT);
++	nouveau_bo_add_io_reserve_lru(bo);
++	if (ret == VM_FAULT_RETRY && !(vmf->flags & FAULT_FLAG_RETRY_NOWAIT))
++		return ret;
++
++error_unlock:
++	dma_resv_unlock(bo->base.resv);
++	return ret;
++}
++
++static const struct vm_operations_struct nouveau_ttm_vm_ops = {
++	.fault = nouveau_ttm_fault,
++	.open = ttm_bo_vm_open,
++	.close = ttm_bo_vm_close,
++	.access = ttm_bo_vm_access
++};
++
++void
++nouveau_gem_object_del(struct drm_gem_object *gem)
++{
++	struct nouveau_bo *nvbo = nouveau_gem_object(gem);
++	struct nouveau_drm *drm = nouveau_bdev(nvbo->bo.bdev);
++	struct device *dev = drm->dev->dev;
++	int ret;
++
++	ret = pm_runtime_get_sync(dev);
++	if (WARN_ON(ret < 0 && ret != -EACCES)) {
++		pm_runtime_put_autosuspend(dev);
++		return;
++	}
++
++	ttm_bo_fini(&nvbo->bo);
++
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++}
++
++int
++nouveau_gem_object_open(struct drm_gem_object *gem, struct drm_file *file_priv)
++{
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	struct nouveau_bo *nvbo = nouveau_gem_object(gem);
++	struct nouveau_drm *drm = nouveau_bdev(nvbo->bo.bdev);
++	struct device *dev = drm->dev->dev;
++	struct nouveau_uvmm *uvmm = nouveau_cli_uvmm(cli);
++	struct nouveau_vmm *vmm = nouveau_cli_vmm(cli);
++	struct nouveau_vma *vma;
++	int ret;
++
++	if (vmm->vmm.object.oclass < NVIF_CLASS_VMM_NV50)
++		return 0;
++
++	if (nvbo->no_share && uvmm &&
++	    drm_gpuvm_resv(&uvmm->base) != nvbo->bo.base.resv)
++		return -EPERM;
++
++	ret = ttm_bo_reserve(&nvbo->bo, false, false, NULL);
++	if (ret)
++		return ret;
++
++	ret = pm_runtime_get_sync(dev);
++	if (ret < 0 && ret != -EACCES) {
++		pm_runtime_put_autosuspend(dev);
++		goto out;
++	}
++
++	/* only create a VMA on binding */
++	if (!nouveau_cli_uvmm(cli))
++		ret = nouveau_vma_new(nvbo, vmm, &vma);
++	else
++		ret = 0;
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++out:
++	ttm_bo_unreserve(&nvbo->bo);
++	return ret;
++}
++
++struct nouveau_gem_object_unmap {
++	struct nouveau_cli_work work;
++	struct nouveau_vma *vma;
++};
++
++static void
++nouveau_gem_object_delete(struct nouveau_vma *vma)
++{
++	nouveau_fence_unref(&vma->fence);
++	nouveau_vma_del(&vma);
++}
++
++static void
++nouveau_gem_object_delete_work(struct nouveau_cli_work *w)
++{
++	struct nouveau_gem_object_unmap *work =
++		container_of(w, typeof(*work), work);
++	nouveau_gem_object_delete(work->vma);
++	kfree(work);
++}
++
++static void
++nouveau_gem_object_unmap(struct nouveau_bo *nvbo, struct nouveau_vma *vma)
++{
++	struct dma_fence *fence = vma->fence ? &vma->fence->base : NULL;
++	struct nouveau_gem_object_unmap *work;
++
++	list_del_init(&vma->head);
++
++	if (!fence) {
++		nouveau_gem_object_delete(vma);
++		return;
++	}
++
++	if (!(work = kmalloc_obj(*work))) {
++		WARN_ON(dma_fence_wait_timeout(fence, false, 2 * HZ) <= 0);
++		nouveau_gem_object_delete(vma);
++		return;
++	}
++
++	work->work.func = nouveau_gem_object_delete_work;
++	work->vma = vma;
++	nouveau_cli_work_queue(vma->vmm->cli, fence, &work->work);
++}
++
++void
++nouveau_gem_object_close(struct drm_gem_object *gem, struct drm_file *file_priv)
++{
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	struct nouveau_bo *nvbo = nouveau_gem_object(gem);
++	struct nouveau_drm *drm = nouveau_bdev(nvbo->bo.bdev);
++	struct device *dev = drm->dev->dev;
++	struct nouveau_vmm *vmm = nouveau_cli_vmm(cli);
++	struct nouveau_vma *vma;
++	int ret;
++
++	if (vmm->vmm.object.oclass < NVIF_CLASS_VMM_NV50)
++		return;
++
++	if (nouveau_cli_uvmm(cli))
++		return;
++
++	ret = ttm_bo_reserve(&nvbo->bo, false, false, NULL);
++	if (ret)
++		return;
++
++	vma = nouveau_vma_find(nvbo, vmm);
++	if (vma) {
++		if (--vma->refs == 0) {
++			ret = pm_runtime_get_sync(dev);
++			if (!WARN_ON(ret < 0 && ret != -EACCES)) {
++				nouveau_gem_object_unmap(nvbo, vma);
++				pm_runtime_mark_last_busy(dev);
++			}
++			pm_runtime_put_autosuspend(dev);
++		}
++	}
++	ttm_bo_unreserve(&nvbo->bo);
++}
++
++const struct drm_gem_object_funcs nouveau_gem_object_funcs = {
++	.free = nouveau_gem_object_del,
++	.open = nouveau_gem_object_open,
++	.close = nouveau_gem_object_close,
++	.export = nouveau_gem_prime_export,
++	.pin = nouveau_gem_prime_pin,
++	.unpin = nouveau_gem_prime_unpin,
++	.get_sg_table = nouveau_gem_prime_get_sg_table,
++	.vmap = drm_gem_ttm_vmap,
++	.vunmap = drm_gem_ttm_vunmap,
++	.mmap = drm_gem_ttm_mmap,
++	.vm_ops = &nouveau_ttm_vm_ops,
++};
++
++int
++nouveau_gem_new(struct nouveau_cli *cli, u64 size, int align, uint32_t domain,
++		uint32_t tile_mode, uint32_t tile_flags,
++		struct nouveau_bo **pnvbo)
++{
++	struct nouveau_drm *drm = cli->drm;
++	struct nouveau_uvmm *uvmm = nouveau_cli_uvmm(cli);
++	struct dma_resv *resv = NULL;
++	struct nouveau_bo *nvbo;
++	int ret;
++
++	if (domain & NOUVEAU_GEM_DOMAIN_NO_SHARE) {
++		if (unlikely(!uvmm))
++			return -EINVAL;
++
++		resv = drm_gpuvm_resv(&uvmm->base);
++	}
++
++	if (!(domain & (NOUVEAU_GEM_DOMAIN_VRAM | NOUVEAU_GEM_DOMAIN_GART)))
++		domain |= NOUVEAU_GEM_DOMAIN_CPU;
++
++	nvbo = nouveau_bo_alloc(cli, &size, &align, domain, tile_mode,
++				tile_flags, false);
++	if (IS_ERR(nvbo))
++		return PTR_ERR(nvbo);
++
++	nvbo->bo.base.funcs = &nouveau_gem_object_funcs;
++	nvbo->no_share = domain & NOUVEAU_GEM_DOMAIN_NO_SHARE;
++
++	/* Initialize the embedded gem-object. We return a single gem-reference
++	 * to the caller, instead of a normal nouveau_bo ttm reference. */
++	ret = drm_gem_object_init(drm->dev, &nvbo->bo.base, size);
++	if (ret) {
++		drm_gem_object_release(&nvbo->bo.base);
++		kfree(nvbo);
++		return ret;
++	}
++
++	if (resv)
++		dma_resv_lock(resv, NULL);
++
++	ret = nouveau_bo_init(nvbo, size, align, domain, NULL, resv);
++
++	if (resv)
++		dma_resv_unlock(resv);
++
++	if (ret)
++		return ret;
++
++	/* we restrict allowed domains on nv50+ to only the types
++	 * that were requested at creation time.  not possibly on
++	 * earlier chips without busting the ABI.
++	 */
++	nvbo->valid_domains = NOUVEAU_GEM_DOMAIN_VRAM |
++			      NOUVEAU_GEM_DOMAIN_GART;
++	if (drm->client.device.info.family >= NV_DEVICE_INFO_V0_TESLA)
++		nvbo->valid_domains &= domain;
++
++	if (nvbo->no_share) {
++		nvbo->r_obj = drm_gpuvm_resv_obj(&uvmm->base);
++		drm_gem_object_get(nvbo->r_obj);
++	}
++
++	*pnvbo = nvbo;
++	return 0;
++}
++
++static int
++nouveau_gem_info(struct drm_file *file_priv, struct drm_gem_object *gem,
++		 struct drm_nouveau_gem_info *rep)
++{
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	struct nouveau_bo *nvbo = nouveau_gem_object(gem);
++	struct nouveau_vmm *vmm = nouveau_cli_vmm(cli);
++	struct nouveau_vma *vma;
++
++	if (is_power_of_2(nvbo->valid_domains))
++		rep->domain = nvbo->valid_domains;
++	else if (nvbo->bo.resource->mem_type == TTM_PL_TT)
++		rep->domain = NOUVEAU_GEM_DOMAIN_GART;
++	else
++		rep->domain = NOUVEAU_GEM_DOMAIN_VRAM;
++	rep->offset = nvbo->offset;
++	if (vmm->vmm.object.oclass >= NVIF_CLASS_VMM_NV50 &&
++	    !nouveau_cli_uvmm(cli)) {
++		int ret;
++
++		ret = ttm_bo_reserve(&nvbo->bo, false, false, NULL);
++		if (ret)
++			return ret;
++
++		vma = nouveau_vma_find(nvbo, vmm);
++		if (!vma) {
++			ttm_bo_unreserve(&nvbo->bo);
++			return -EINVAL;
++		}
++
++		rep->offset = vma->addr;
++		ttm_bo_unreserve(&nvbo->bo);
++	} else
++		rep->offset = 0;
++
++	rep->size = nvbo->bo.base.size;
++	rep->map_handle = drm_vma_node_offset_addr(&nvbo->bo.base.vma_node);
++	rep->tile_mode = nvbo->mode;
++	rep->tile_flags = nvbo->contig ? 0 : NOUVEAU_GEM_TILE_NONCONTIG;
++	if (cli->device.info.family >= NV_DEVICE_INFO_V0_FERMI)
++		rep->tile_flags |= nvbo->kind << 8;
++	else
++	if (cli->device.info.family >= NV_DEVICE_INFO_V0_TESLA)
++		rep->tile_flags |= nvbo->kind << 8 | nvbo->comp << 16;
++	else
++		rep->tile_flags |= nvbo->zeta;
++	return 0;
++}
++
++int
++nouveau_gem_ioctl_new(struct drm_device *dev, void *data,
++		      struct drm_file *file_priv)
++{
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	struct drm_nouveau_gem_new *req = data;
++	struct nouveau_bo *nvbo = NULL;
++	int ret = 0;
++
++	/* If uvmm wasn't initialized until now disable it completely to prevent
++	 * userspace from mixing up UAPIs.
++	 */
++	nouveau_cli_disable_uvmm_noinit(cli);
++
++	ret = nouveau_gem_new(cli, req->info.size, req->align,
++			      req->info.domain, req->info.tile_mode,
++			      req->info.tile_flags, &nvbo);
++	if (ret)
++		return ret;
++
++	ret = drm_gem_handle_create(file_priv, &nvbo->bo.base,
++				    &req->info.handle);
++	if (ret == 0) {
++		ret = nouveau_gem_info(file_priv, &nvbo->bo.base, &req->info);
++		if (ret)
++			drm_gem_handle_delete(file_priv, req->info.handle);
++	}
++
++	/* drop reference from allocate - handle holds it now */
++	drm_gem_object_put(&nvbo->bo.base);
++	return ret;
++}
++
++static int
++nouveau_gem_set_domain(struct drm_gem_object *gem, uint32_t read_domains,
++		       uint32_t write_domains, uint32_t valid_domains)
++{
++	struct nouveau_bo *nvbo = nouveau_gem_object(gem);
++	struct ttm_buffer_object *bo = &nvbo->bo;
++	uint32_t domains = valid_domains & nvbo->valid_domains &
++		(write_domains ? write_domains : read_domains);
++	uint32_t pref_domains = 0;
++
++	if (!domains)
++		return -EINVAL;
++
++	valid_domains &= ~(NOUVEAU_GEM_DOMAIN_VRAM | NOUVEAU_GEM_DOMAIN_GART);
++
++	if ((domains & NOUVEAU_GEM_DOMAIN_VRAM) &&
++	    bo->resource->mem_type == TTM_PL_VRAM)
++		pref_domains |= NOUVEAU_GEM_DOMAIN_VRAM;
++
++	else if ((domains & NOUVEAU_GEM_DOMAIN_GART) &&
++		 bo->resource->mem_type == TTM_PL_TT)
++		pref_domains |= NOUVEAU_GEM_DOMAIN_GART;
++
++	else if (domains & NOUVEAU_GEM_DOMAIN_VRAM)
++		pref_domains |= NOUVEAU_GEM_DOMAIN_VRAM;
++
++	else
++		pref_domains |= NOUVEAU_GEM_DOMAIN_GART;
++
++	nouveau_bo_placement_set(nvbo, pref_domains, valid_domains);
++
++	return 0;
++}
++
++struct validate_op {
++	struct list_head list;
++	struct ww_acquire_ctx ticket;
++};
++
++static void
++validate_fini_no_ticket(struct validate_op *op, struct nouveau_channel *chan,
++			struct nouveau_fence *fence,
++			struct drm_nouveau_gem_pushbuf_bo *pbbo)
++{
++	struct nouveau_bo *nvbo;
++	struct drm_nouveau_gem_pushbuf_bo *b;
++
++	while (!list_empty(&op->list)) {
++		nvbo = list_entry(op->list.next, struct nouveau_bo, entry);
++		b = &pbbo[nvbo->pbbo_index];
++
++		if (likely(fence)) {
++			nouveau_bo_fence(nvbo, fence, !!b->write_domains);
++
++			if (chan->vmm->vmm.object.oclass >= NVIF_CLASS_VMM_NV50) {
++				struct nouveau_vma *vma =
++					(void *)(unsigned long)b->user_priv;
++				nouveau_fence_unref(&vma->fence);
++				dma_fence_get(&fence->base);
++				vma->fence = fence;
++			}
++		}
++
++		if (unlikely(nvbo->validate_mapped)) {
++			ttm_bo_kunmap(&nvbo->kmap);
++			nvbo->validate_mapped = false;
++		}
++
++		list_del(&nvbo->entry);
++		nvbo->reserved_by = NULL;
++		ttm_bo_unreserve(&nvbo->bo);
++		drm_gem_object_put(&nvbo->bo.base);
++	}
++}
++
++static void
++validate_fini(struct validate_op *op, struct nouveau_channel *chan,
++	      struct nouveau_fence *fence,
++	      struct drm_nouveau_gem_pushbuf_bo *pbbo)
++{
++	validate_fini_no_ticket(op, chan, fence, pbbo);
++	ww_acquire_fini(&op->ticket);
++}
++
++static int
++validate_init(struct nouveau_channel *chan, struct drm_file *file_priv,
++	      struct drm_nouveau_gem_pushbuf_bo *pbbo,
++	      int nr_buffers, struct validate_op *op)
++{
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	int trycnt = 0;
++	int ret = -EINVAL, i;
++	struct nouveau_bo *res_bo = NULL;
++	LIST_HEAD(gart_list);
++	LIST_HEAD(vram_list);
++	LIST_HEAD(both_list);
++
++	ww_acquire_init(&op->ticket, &reservation_ww_class);
++retry:
++	if (++trycnt > 100000) {
++		NV_PRINTK(err, cli, "%s failed and gave up.\n", __func__);
++		return -EINVAL;
++	}
++
++	for (i = 0; i < nr_buffers; i++) {
++		struct drm_nouveau_gem_pushbuf_bo *b = &pbbo[i];
++		struct drm_gem_object *gem;
++		struct nouveau_bo *nvbo;
++
++		gem = drm_gem_object_lookup(file_priv, b->handle);
++		if (!gem) {
++			NV_PRINTK(err, cli, "Unknown handle 0x%08x\n", b->handle);
++			ret = -ENOENT;
++			break;
++		}
++		nvbo = nouveau_gem_object(gem);
++		if (nvbo == res_bo) {
++			res_bo = NULL;
++			drm_gem_object_put(gem);
++			continue;
++		}
++
++		if (nvbo->reserved_by && nvbo->reserved_by == file_priv) {
++			NV_PRINTK(err, cli, "multiple instances of buffer %d on "
++				      "validation list\n", b->handle);
++			drm_gem_object_put(gem);
++			ret = -EINVAL;
++			break;
++		}
++
++		ret = ttm_bo_reserve(&nvbo->bo, true, false, &op->ticket);
++		if (ret) {
++			list_splice_tail_init(&vram_list, &op->list);
++			list_splice_tail_init(&gart_list, &op->list);
++			list_splice_tail_init(&both_list, &op->list);
++			validate_fini_no_ticket(op, chan, NULL, NULL);
++			if (unlikely(ret == -EDEADLK)) {
++				ret = ttm_bo_reserve_slowpath(&nvbo->bo, true,
++							      &op->ticket);
++				if (!ret)
++					res_bo = nvbo;
++			}
++			if (unlikely(ret)) {
++				if (ret != -ERESTARTSYS)
++					NV_PRINTK(err, cli, "fail reserve\n");
++				drm_gem_object_put(gem);
++				break;
++			}
++		}
++
++		if (chan->vmm->vmm.object.oclass >= NVIF_CLASS_VMM_NV50) {
++			struct nouveau_vmm *vmm = chan->vmm;
++			struct nouveau_vma *vma = nouveau_vma_find(nvbo, vmm);
++			if (!vma) {
++				NV_PRINTK(err, cli, "vma not found!\n");
++				drm_gem_object_put(gem);
++				ret = -EINVAL;
++				break;
++			}
++
++			b->user_priv = (uint64_t)(unsigned long)vma;
++		} else {
++			b->user_priv = (uint64_t)(unsigned long)nvbo;
++		}
++
++		nvbo->reserved_by = file_priv;
++		nvbo->pbbo_index = i;
++		if ((b->valid_domains & NOUVEAU_GEM_DOMAIN_VRAM) &&
++		    (b->valid_domains & NOUVEAU_GEM_DOMAIN_GART))
++			list_add_tail(&nvbo->entry, &both_list);
++		else
++		if (b->valid_domains & NOUVEAU_GEM_DOMAIN_VRAM)
++			list_add_tail(&nvbo->entry, &vram_list);
++		else
++		if (b->valid_domains & NOUVEAU_GEM_DOMAIN_GART)
++			list_add_tail(&nvbo->entry, &gart_list);
++		else {
++			NV_PRINTK(err, cli, "invalid valid domains: 0x%08x\n",
++				 b->valid_domains);
++			list_add_tail(&nvbo->entry, &both_list);
++			ret = -EINVAL;
++			break;
++		}
++		if (nvbo == res_bo)
++			goto retry;
++	}
++
++	ww_acquire_done(&op->ticket);
++	list_splice_tail(&vram_list, &op->list);
++	list_splice_tail(&gart_list, &op->list);
++	list_splice_tail(&both_list, &op->list);
++	if (ret)
++		validate_fini(op, chan, NULL, NULL);
++	return ret;
++
++}
++
++static int
++validate_list(struct nouveau_channel *chan,
++	      struct list_head *list, struct drm_nouveau_gem_pushbuf_bo *pbbo)
++{
++	struct nouveau_cli *cli = chan->cli;
++	struct nouveau_drm *drm = cli->drm;
++	struct nouveau_bo *nvbo;
++	int ret, relocs = 0;
++
++	list_for_each_entry(nvbo, list, entry) {
++		struct drm_nouveau_gem_pushbuf_bo *b = &pbbo[nvbo->pbbo_index];
++
++		ret = nouveau_gem_set_domain(&nvbo->bo.base, b->read_domains,
++					     b->write_domains,
++					     b->valid_domains);
++		if (unlikely(ret)) {
++			NV_PRINTK(err, cli, "fail set_domain\n");
++			return ret;
++		}
++
++		ret = nouveau_bo_validate(nvbo, true, false);
++		if (unlikely(ret)) {
++			if (ret != -ERESTARTSYS)
++				NV_PRINTK(err, cli, "fail ttm_validate\n");
++			return ret;
++		}
++
++		ret = nouveau_fence_sync(nvbo, chan, !!b->write_domains, true);
++		if (unlikely(ret)) {
++			if (ret != -ERESTARTSYS)
++				NV_PRINTK(err, cli, "fail post-validate sync\n");
++			return ret;
++		}
++
++		if (drm->client.device.info.family < NV_DEVICE_INFO_V0_TESLA) {
++			if (nvbo->offset == b->presumed.offset &&
++			    ((nvbo->bo.resource->mem_type == TTM_PL_VRAM &&
++			      b->presumed.domain & NOUVEAU_GEM_DOMAIN_VRAM) ||
++			     (nvbo->bo.resource->mem_type == TTM_PL_TT &&
++			      b->presumed.domain & NOUVEAU_GEM_DOMAIN_GART)))
++				continue;
++
++			if (nvbo->bo.resource->mem_type == TTM_PL_TT)
++				b->presumed.domain = NOUVEAU_GEM_DOMAIN_GART;
++			else
++				b->presumed.domain = NOUVEAU_GEM_DOMAIN_VRAM;
++			b->presumed.offset = nvbo->offset;
++			b->presumed.valid = 0;
++			relocs++;
++		}
++	}
++
++	return relocs;
++}
++
++static int
++nouveau_gem_pushbuf_validate(struct nouveau_channel *chan,
++			     struct drm_file *file_priv,
++			     struct drm_nouveau_gem_pushbuf_bo *pbbo,
++			     int nr_buffers,
++			     struct validate_op *op, bool *apply_relocs)
++{
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	int ret;
++
++	INIT_LIST_HEAD(&op->list);
++
++	if (nr_buffers == 0)
++		return 0;
++
++	ret = validate_init(chan, file_priv, pbbo, nr_buffers, op);
++	if (unlikely(ret)) {
++		if (ret != -ERESTARTSYS)
++			NV_PRINTK(err, cli, "validate_init\n");
++		return ret;
++	}
++
++	ret = validate_list(chan, &op->list, pbbo);
++	if (unlikely(ret < 0)) {
++		if (ret != -ERESTARTSYS)
++			NV_PRINTK(err, cli, "validating bo list\n");
++		validate_fini(op, chan, NULL, NULL);
++		return ret;
++	} else if (ret > 0) {
++		*apply_relocs = true;
++	}
++
++	return 0;
++}
++
++static int
++nouveau_gem_pushbuf_reloc_apply(struct nouveau_cli *cli,
++				struct drm_nouveau_gem_pushbuf *req,
++				struct drm_nouveau_gem_pushbuf_reloc *reloc,
++				struct drm_nouveau_gem_pushbuf_bo *bo)
++{
++	int ret = 0;
++	unsigned i;
++
++	for (i = 0; i < req->nr_relocs; i++) {
++		struct drm_nouveau_gem_pushbuf_reloc *r = &reloc[i];
++		struct drm_nouveau_gem_pushbuf_bo *b;
++		struct nouveau_bo *nvbo;
++		uint32_t data;
++		long lret;
++
++		if (unlikely(r->bo_index >= req->nr_buffers)) {
++			NV_PRINTK(err, cli, "reloc bo index invalid\n");
++			ret = -EINVAL;
++			break;
++		}
++
++		b = &bo[r->bo_index];
++		if (b->presumed.valid)
++			continue;
++
++		if (unlikely(r->reloc_bo_index >= req->nr_buffers)) {
++			NV_PRINTK(err, cli, "reloc container bo index invalid\n");
++			ret = -EINVAL;
++			break;
++		}
++		nvbo = (void *)(unsigned long)bo[r->reloc_bo_index].user_priv;
++
++		if (unlikely((u64)r->reloc_bo_offset + 4 >
++			     nvbo->bo.base.size)) {
++			NV_PRINTK(err, cli, "reloc outside of bo\n");
++			ret = -EINVAL;
++			break;
++		}
++
++		if (!nvbo->kmap.virtual) {
++			ret = ttm_bo_kmap(&nvbo->bo, 0, PFN_UP(nvbo->bo.base.size),
++					  &nvbo->kmap);
++			if (ret) {
++				NV_PRINTK(err, cli, "failed kmap for reloc\n");
++				break;
++			}
++			nvbo->validate_mapped = true;
++		}
++
++		if (r->flags & NOUVEAU_GEM_RELOC_LOW)
++			data = b->presumed.offset + r->data;
++		else
++		if (r->flags & NOUVEAU_GEM_RELOC_HIGH)
++			data = (b->presumed.offset + r->data) >> 32;
++		else
++			data = r->data;
++
++		if (r->flags & NOUVEAU_GEM_RELOC_OR) {
++			if (b->presumed.domain == NOUVEAU_GEM_DOMAIN_GART)
++				data |= r->tor;
++			else
++				data |= r->vor;
++		}
++
++		lret = dma_resv_wait_timeout(nvbo->bo.base.resv,
++					     DMA_RESV_USAGE_BOOKKEEP,
++					     false, 15 * HZ);
++		if (!lret)
++			ret = -EBUSY;
++		else if (lret > 0)
++			ret = 0;
++		else
++			ret = lret;
++
++		if (ret) {
++			NV_PRINTK(err, cli, "reloc wait_idle failed: %d\n",
++				  ret);
++			break;
++		}
++
++		nouveau_bo_wr32(nvbo, r->reloc_bo_offset >> 2, data);
++	}
++
++	return ret;
++}
++
++int
++nouveau_gem_ioctl_pushbuf(struct drm_device *dev, void *data,
++			  struct drm_file *file_priv)
++{
++	struct nouveau_abi16 *abi16 = nouveau_abi16_get(file_priv);
++	struct nouveau_cli *cli = nouveau_cli(file_priv);
++	struct nouveau_abi16_chan *temp;
++	struct nouveau_drm *drm = nouveau_drm(dev);
++	struct drm_nouveau_gem_pushbuf *req = data;
++	struct drm_nouveau_gem_pushbuf_push *push;
++	struct drm_nouveau_gem_pushbuf_reloc *reloc = NULL;
++	struct drm_nouveau_gem_pushbuf_bo *bo;
++	struct nouveau_channel *chan = NULL;
++	struct validate_op op;
++	struct nouveau_fence *fence = NULL;
++	int i, j, ret = 0;
++	bool do_reloc = false, sync = false;
++
++	if (unlikely(!abi16))
++		return -ENOMEM;
++
++	if (unlikely(nouveau_cli_uvmm(cli)))
++		return nouveau_abi16_put(abi16, -ENOSYS);
++
++	list_for_each_entry(temp, &abi16->channels, head) {
++		if (temp->chan->chid == req->channel) {
++			chan = temp->chan;
++			break;
++		}
++	}
++
++	if (!chan)
++		return nouveau_abi16_put(abi16, -ENOENT);
++	if (unlikely(atomic_read(&chan->killed)))
++		return nouveau_abi16_put(abi16, -ENODEV);
++
++	sync = req->vram_available & NOUVEAU_GEM_PUSHBUF_SYNC;
++
++	req->vram_available = drm->gem.vram_available;
++	req->gart_available = drm->gem.gart_available;
++	if (unlikely(req->nr_push == 0))
++		goto out_next;
++
++	if (unlikely(req->nr_push > NOUVEAU_GEM_MAX_PUSH)) {
++		NV_PRINTK(err, cli, "pushbuf push count exceeds limit: %d max %d\n",
++			 req->nr_push, NOUVEAU_GEM_MAX_PUSH);
++		return nouveau_abi16_put(abi16, -EINVAL);
++	}
++
++	if (unlikely(req->nr_buffers > NOUVEAU_GEM_MAX_BUFFERS)) {
++		NV_PRINTK(err, cli, "pushbuf bo count exceeds limit: %d max %d\n",
++			 req->nr_buffers, NOUVEAU_GEM_MAX_BUFFERS);
++		return nouveau_abi16_put(abi16, -EINVAL);
++	}
++
++	if (unlikely(req->nr_relocs > NOUVEAU_GEM_MAX_RELOCS)) {
++		NV_PRINTK(err, cli, "pushbuf reloc count exceeds limit: %d max %d\n",
++			 req->nr_relocs, NOUVEAU_GEM_MAX_RELOCS);
++		return nouveau_abi16_put(abi16, -EINVAL);
++	}
++
++	push = u_memcpya(req->push, req->nr_push, sizeof(*push));
++	if (IS_ERR(push))
++		return nouveau_abi16_put(abi16, PTR_ERR(push));
++
++	bo = u_memcpya(req->buffers, req->nr_buffers, sizeof(*bo));
++	if (IS_ERR(bo)) {
++		u_free(push);
++		return nouveau_abi16_put(abi16, PTR_ERR(bo));
++	}
++
++	/* Ensure all push buffers are on validate list */
++	for (i = 0; i < req->nr_push; i++) {
++		if (push[i].bo_index >= req->nr_buffers) {
++			NV_PRINTK(err, cli, "push %d buffer not in list\n", i);
++			ret = -EINVAL;
++			goto out_prevalid;
++		}
++	}
++
++	/* Validate buffer list */
++revalidate:
++	ret = nouveau_gem_pushbuf_validate(chan, file_priv, bo,
++					   req->nr_buffers, &op, &do_reloc);
++	if (ret) {
++		if (ret != -ERESTARTSYS)
++			NV_PRINTK(err, cli, "validate: %d\n", ret);
++		goto out_prevalid;
++	}
++
++	/* Apply any relocations that are required */
++	if (do_reloc) {
++		if (!reloc) {
++			validate_fini(&op, chan, NULL, bo);
++			reloc = u_memcpya(req->relocs, req->nr_relocs, sizeof(*reloc));
++			if (IS_ERR(reloc)) {
++				ret = PTR_ERR(reloc);
++				goto out_prevalid;
++			}
++
++			goto revalidate;
++		}
++
++		ret = nouveau_gem_pushbuf_reloc_apply(cli, req, reloc, bo);
++		if (ret) {
++			NV_PRINTK(err, cli, "reloc apply: %d\n", ret);
++			goto out;
++		}
++	}
++
++	if (chan->user.oclass >= NV50_CHANNEL_GPFIFO) {
++		ret = nvif_chan_gpfifo_wait(&chan->chan, req->nr_push + 1, 16);
++		if (ret) {
++			NV_PRINTK(err, cli, "nv50cal_space: %d\n", ret);
++			goto out;
++		}
++
++		for (i = 0; i < req->nr_push; i++) {
++			struct nouveau_vma *vma = (void *)(unsigned long)
++				bo[push[i].bo_index].user_priv;
++			u64 addr = vma->addr + push[i].offset;
++			u32 length = push[i].length & ~NOUVEAU_GEM_PUSHBUF_NO_PREFETCH;
++			bool no_prefetch = push[i].length & NOUVEAU_GEM_PUSHBUF_NO_PREFETCH;
++
++			nvif_chan_gpfifo_push(&chan->chan, addr, length, no_prefetch);
++		}
++
++		nvif_chan_gpfifo_post(&chan->chan);
++	} else
++	if (drm->client.device.info.chipset >= 0x25) {
++		ret = PUSH_WAIT(&chan->chan.push, req->nr_push * 2);
++		if (ret) {
++			NV_PRINTK(err, cli, "cal_space: %d\n", ret);
++			goto out;
++		}
++
++		for (i = 0; i < req->nr_push; i++) {
++			struct nouveau_bo *nvbo = (void *)(unsigned long)
++				bo[push[i].bo_index].user_priv;
++
++			PUSH_CALL(&chan->chan.push, nvbo->offset + push[i].offset);
++			PUSH_DATA(&chan->chan.push, 0);
++		}
++	} else {
++		ret = PUSH_WAIT(&chan->chan.push, req->nr_push * (2 + NOUVEAU_DMA_SKIPS));
++		if (ret) {
++			NV_PRINTK(err, cli, "jmp_space: %d\n", ret);
++			goto out;
++		}
++
++		for (i = 0; i < req->nr_push; i++) {
++			struct nouveau_bo *nvbo = (void *)(unsigned long)
++				bo[push[i].bo_index].user_priv;
++			uint32_t cmd;
++
++			cmd = chan->push.addr + ((chan->dma.cur + 2) << 2);
++			cmd |= 0x20000000;
++			if (unlikely(cmd != req->suffix0)) {
++				if (!nvbo->kmap.virtual) {
++					ret = ttm_bo_kmap(&nvbo->bo, 0,
++							  PFN_UP(nvbo->bo.base.size),
++							  &nvbo->kmap);
++					if (ret) {
++						WIND_RING(chan);
++						goto out;
++					}
++					nvbo->validate_mapped = true;
++				}
++
++				nouveau_bo_wr32(nvbo, (push[i].offset +
++						push[i].length - 8) / 4, cmd);
++			}
++
++			PUSH_JUMP(&chan->chan.push, nvbo->offset + push[i].offset);
++			PUSH_DATA(&chan->chan.push, 0);
++			for (j = 0; j < NOUVEAU_DMA_SKIPS; j++)
++				PUSH_DATA(&chan->chan.push, 0);
++		}
++	}
++
++	ret = nouveau_fence_new(&fence, chan);
++	if (ret) {
++		NV_PRINTK(err, cli, "error fencing pushbuf: %d\n", ret);
++		WIND_RING(chan);
++		goto out;
++	}
++
++	if (sync) {
++		if (!(ret = nouveau_fence_wait(fence, false, false))) {
++			if ((ret = dma_fence_get_status(&fence->base)) == 1)
++				ret = 0;
++		}
++	}
++
++out:
++	validate_fini(&op, chan, fence, bo);
++	nouveau_fence_unref(&fence);
++
++	if (do_reloc) {
++		struct drm_nouveau_gem_pushbuf_bo __user *upbbo =
++			u64_to_user_ptr(req->buffers);
++
++		for (i = 0; i < req->nr_buffers; i++) {
++			if (bo[i].presumed.valid)
++				continue;
++
++			if (copy_to_user(&upbbo[i].presumed, &bo[i].presumed,
++					 sizeof(bo[i].presumed))) {
++				ret = -EFAULT;
++				break;
++			}
++		}
++	}
++out_prevalid:
++	if (!IS_ERR(reloc))
++		u_free(reloc);
++	u_free(bo);
++	u_free(push);
++
++out_next:
++	if (chan->user.oclass >= NV50_CHANNEL_GPFIFO) {
++		req->suffix0 = 0x00000000;
++		req->suffix1 = 0x00000000;
++	} else
++	if (drm->client.device.info.chipset >= 0x25) {
++		req->suffix0 = 0x00020000;
++		req->suffix1 = 0x00000000;
++	} else {
++		req->suffix0 = 0x20000000 |
++			      (chan->push.addr + ((chan->dma.cur + 2) << 2));
++		req->suffix1 = 0x00000000;
++	}
++
++	return nouveau_abi16_put(abi16, ret);
++}
++
++int
++nouveau_gem_ioctl_cpu_prep(struct drm_device *dev, void *data,
++			   struct drm_file *file_priv)
++{
++	struct drm_nouveau_gem_cpu_prep *req = data;
++	struct drm_gem_object *gem;
++	struct nouveau_bo *nvbo;
++	bool no_wait = !!(req->flags & NOUVEAU_GEM_CPU_PREP_NOWAIT);
++	bool write = !!(req->flags & NOUVEAU_GEM_CPU_PREP_WRITE);
++	long lret;
++	int ret;
++
++	gem = drm_gem_object_lookup(file_priv, req->handle);
++	if (!gem)
++		return -ENOENT;
++	nvbo = nouveau_gem_object(gem);
++
++	lret = dma_resv_wait_timeout(nvbo->bo.base.resv,
++				     dma_resv_usage_rw(write), true,
++				     no_wait ? 0 : 30 * HZ);
++	if (!lret)
++		ret = -EBUSY;
++	else if (lret > 0)
++		ret = 0;
++	else
++		ret = lret;
++
++	nouveau_bo_sync_for_cpu(nvbo);
++	drm_gem_object_put(gem);
++
++	return ret;
++}
++
++int
++nouveau_gem_ioctl_cpu_fini(struct drm_device *dev, void *data,
++			   struct drm_file *file_priv)
++{
++	struct drm_nouveau_gem_cpu_fini *req = data;
++	struct drm_gem_object *gem;
++	struct nouveau_bo *nvbo;
++
++	gem = drm_gem_object_lookup(file_priv, req->handle);
++	if (!gem)
++		return -ENOENT;
++	nvbo = nouveau_gem_object(gem);
++
++	nouveau_bo_sync_for_device(nvbo);
++	drm_gem_object_put(gem);
++	return 0;
++}
++
++int
++nouveau_gem_ioctl_info(struct drm_device *dev, void *data,
++		       struct drm_file *file_priv)
++{
++	struct drm_nouveau_gem_info *req = data;
++	struct drm_gem_object *gem;
++	int ret;
++
++	gem = drm_gem_object_lookup(file_priv, req->handle);
++	if (!gem)
++		return -ENOENT;
++
++	ret = nouveau_gem_info(file_priv, gem, req);
++	drm_gem_object_put(gem);
++	return ret;
++}
++
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/clk/base.c nouveau-source/nvkm/subdev/clk/base.c
---- orig/nvkm/subdev/clk/base.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nvkm/subdev/clk/base.c	2026-10-27 15:57:29.219098179 +0200
+--- orig/nvkm/subdev/clk/base.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nvkm/subdev/clk/base.c	2026-10-30 17:34:17.347582750 +0100
 @@ -29,6 +29,7 @@
  #include <subdev/bios/perf.h>
  #include <subdev/bios/vpstate.h>
@@ -154,7 +2077,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  #include <subdev/therm.h>
  #include <subdev/volt.h>
  
-@@ -278,19 +279,37 @@
+@@ -280,19 +281,37 @@
  	}
  
  	nvkm_debug(subdev, "setting performance state %d\n", pstatei);
@@ -194,7 +2117,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	}
  
  	return nvkm_cstate_prog(clk, pstate, NVKM_CLK_CSTATE_HIGHEST);
-@@ -428,6 +447,12 @@
+@@ -430,6 +449,12 @@
  	pstate->pcie_width = perfE.pcie_width;
  	cstate = &pstate->base;
  	cstate->voltage = perfE.voltage;
@@ -207,7 +2130,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	cstate->domain[nv_clk_src_core] = perfE.core;
  	cstate->domain[nv_clk_src_shader] = perfE.shader;
  	cstate->domain[nv_clk_src_mem] = perfE.memory;
-@@ -451,6 +476,9 @@
+@@ -453,6 +478,9 @@
  
  		cstate->domain[domain->name] = perfS.v40.freq;
  	}
@@ -217,7 +2140,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  
  	data = nvbios_cstepEm(bios, pstate->pstate, &ver, &hdr, &cstepE);
  	if (data) {
-@@ -463,6 +491,35 @@
+@@ -465,6 +493,35 @@
  	nvkm_pstate_info(clk, pstate);
  	list_add_tail(&pstate->head, &clk->states);
  	clk->state_nr++;
@@ -253,7 +2176,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	return 0;
  }
  
-@@ -524,6 +581,7 @@
+@@ -529,6 +586,7 @@
  	if (ret >= 0) {
  		if (ret -= 2, pwr) clk->ustate_ac = ret;
  		else		   clk->ustate_dc = ret;
@@ -261,7 +2184,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  		return nvkm_pstate_calc(clk, true);
  	}
  	return ret;
-@@ -555,6 +613,7 @@
+@@ -560,6 +618,7 @@
  	if ( rel) clk->dstate += rel;
  	clk->dstate = min(clk->dstate, clk->state_nr - 1);
  	clk->dstate = max(clk->dstate, 0);
@@ -269,7 +2192,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	return nvkm_pstate_calc(clk, true);
  }
  
-@@ -590,6 +649,7 @@
+@@ -595,6 +654,7 @@
  nvkm_clk_init(struct nvkm_subdev *subdev)
  {
  	struct nvkm_clk *clk = nvkm_clk(subdev);
@@ -277,7 +2200,7 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	const struct nvkm_domain *clock = clk->domains;
  	int ret;
  
-@@ -612,11 +672,40 @@
+@@ -617,11 +677,40 @@
  	if (clk->func->init)
  		return clk->func->init(clk);
  
@@ -318,9 +2241,734 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	return 0;
  }
  
+diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/clk/base.c.orig nouveau-source/nvkm/subdev/clk/base.c.orig
+--- orig/nvkm/subdev/clk/base.c.orig	1970-01-01 01:00:00.000000000 +0100
++++ nouveau-source/nvkm/subdev/clk/base.c.orig	2026-10-16 02:26:10.000000000 +0200
+@@ -0,0 +1,721 @@
++/*
++ * Copyright 2013 Red Hat Inc.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
++ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
++ * OTHER DEALINGS IN THE SOFTWARE.
++ *
++ * Authors: Ben Skeggs
++ */
++#include "priv.h"
++
++#include <subdev/bios.h>
++#include <subdev/bios/boost.h>
++#include <subdev/bios/cstep.h>
++#include <subdev/bios/perf.h>
++#include <subdev/bios/vpstate.h>
++#include <subdev/fb.h>
++#include <subdev/therm.h>
++#include <subdev/volt.h>
++
++#include <core/option.h>
++
++/******************************************************************************
++ * misc
++ *****************************************************************************/
++static u32
++nvkm_clk_adjust(struct nvkm_clk *clk, bool adjust,
++		u8 pstate, u8 domain, u32 input)
++{
++	struct nvkm_bios *bios = clk->subdev.device->bios;
++	struct nvbios_boostE boostE;
++	u8  ver, hdr, cnt, len;
++	u32 data;
++
++	data = nvbios_boostEm(bios, pstate, &ver, &hdr, &cnt, &len, &boostE);
++	if (data) {
++		struct nvbios_boostS boostS;
++		u8  idx = 0, sver, shdr;
++		u32 subd;
++
++		input = max(boostE.min, input);
++		input = min(boostE.max, input);
++		do {
++			sver = ver;
++			shdr = hdr;
++			subd = nvbios_boostSp(bios, idx++, data, &sver, &shdr,
++					      cnt, len, &boostS);
++			if (subd && boostS.domain == domain) {
++				if (adjust)
++					input = input * boostS.percent / 100;
++				input = max(boostS.min, input);
++				input = min(boostS.max, input);
++				break;
++			}
++		} while (subd);
++	}
++
++	return input;
++}
++
++/******************************************************************************
++ * C-States
++ *****************************************************************************/
++static bool
++nvkm_cstate_valid(struct nvkm_clk *clk, struct nvkm_cstate *cstate,
++		  u32 max_volt, int temp)
++{
++	const struct nvkm_domain *domain = clk->domains;
++	struct nvkm_volt *volt = clk->subdev.device->volt;
++	int voltage;
++
++	while (domain && domain->name != nv_clk_src_max) {
++		if (domain->flags & NVKM_CLK_DOM_FLAG_VPSTATE) {
++			u32 freq = cstate->domain[domain->name];
++			switch (clk->boost_mode) {
++			case NVKM_CLK_BOOST_NONE:
++				if (clk->base_khz && freq > clk->base_khz)
++					return false;
++				fallthrough;
++			case NVKM_CLK_BOOST_BIOS:
++				if (clk->boost_khz && freq > clk->boost_khz)
++					return false;
++			}
++		}
++		domain++;
++	}
++
++	if (!volt)
++		return true;
++
++	voltage = nvkm_volt_map(volt, cstate->voltage, temp);
++	if (voltage < 0)
++		return false;
++	return voltage <= min(max_volt, volt->max_uv);
++}
++
++static struct nvkm_cstate *
++nvkm_cstate_find_best(struct nvkm_clk *clk, struct nvkm_pstate *pstate,
++		      struct nvkm_cstate *cstate)
++{
++	struct nvkm_device *device = clk->subdev.device;
++	struct nvkm_volt *volt = device->volt;
++	int max_volt;
++
++	if (!pstate || !cstate)
++		return NULL;
++
++	if (!volt)
++		return cstate;
++
++	max_volt = volt->max_uv;
++	if (volt->max0_id != 0xff)
++		max_volt = min(max_volt,
++			       nvkm_volt_map(volt, volt->max0_id, clk->temp));
++	if (volt->max1_id != 0xff)
++		max_volt = min(max_volt,
++			       nvkm_volt_map(volt, volt->max1_id, clk->temp));
++	if (volt->max2_id != 0xff)
++		max_volt = min(max_volt,
++			       nvkm_volt_map(volt, volt->max2_id, clk->temp));
++
++	list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
++		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
++			return cstate;
++	}
++
++	return NULL;
++}
++
++static struct nvkm_cstate *
++nvkm_cstate_get(struct nvkm_clk *clk, struct nvkm_pstate *pstate, int cstatei)
++{
++	struct nvkm_cstate *cstate;
++	if (cstatei == NVKM_CLK_CSTATE_HIGHEST)
++		return list_last_entry(&pstate->list, typeof(*cstate), head);
++	else {
++		list_for_each_entry(cstate, &pstate->list, head) {
++			if (cstate->id == cstatei)
++				return cstate;
++		}
++	}
++	return NULL;
++}
++
++static int
++nvkm_cstate_prog(struct nvkm_clk *clk, struct nvkm_pstate *pstate, int cstatei)
++{
++	struct nvkm_subdev *subdev = &clk->subdev;
++	struct nvkm_device *device = subdev->device;
++	struct nvkm_therm *therm = device->therm;
++	struct nvkm_volt *volt = device->volt;
++	struct nvkm_cstate *cstate;
++	int ret;
++
++	if (!list_empty(&pstate->list)) {
++		cstate = nvkm_cstate_get(clk, pstate, cstatei);
++		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
++		if (!cstate)
++			return -EINVAL;
++	} else {
++		cstate = &pstate->base;
++	}
++
++	if (therm) {
++		ret = nvkm_therm_cstate(therm, pstate->fanspeed, +1);
++		if (ret && ret != -ENODEV) {
++			nvkm_error(subdev, "failed to raise fan speed: %d\n", ret);
++			return ret;
++		}
++	}
++
++	if (volt) {
++		ret = nvkm_volt_set_id(volt, cstate->voltage,
++				       pstate->base.voltage, clk->temp, +1);
++		if (ret && ret != -ENODEV) {
++			nvkm_error(subdev, "failed to raise voltage: %d\n", ret);
++			return ret;
++		}
++	}
++
++	ret = clk->func->calc(clk, cstate);
++	if (ret == 0) {
++		ret = clk->func->prog(clk);
++		clk->func->tidy(clk);
++	}
++
++	if (volt) {
++		int err = nvkm_volt_set_id(volt, cstate->voltage,
++					   pstate->base.voltage, clk->temp, -1);
++
++		if (err && err != -ENODEV)
++			nvkm_error(subdev, "failed to lower voltage: %d\n", err);
++	}
++
++	if (therm) {
++		int err = nvkm_therm_cstate(therm, pstate->fanspeed, -1);
++
++		if (err && err != -ENODEV)
++			nvkm_error(subdev, "failed to lower fan speed: %d\n", err);
++	}
++
++	return ret;
++}
++
++static void
++nvkm_cstate_del(struct nvkm_cstate *cstate)
++{
++	list_del(&cstate->head);
++	kfree(cstate);
++}
++
++static int
++nvkm_cstate_new(struct nvkm_clk *clk, int idx, struct nvkm_pstate *pstate)
++{
++	struct nvkm_bios *bios = clk->subdev.device->bios;
++	struct nvkm_volt *volt = clk->subdev.device->volt;
++	const struct nvkm_domain *domain = clk->domains;
++	struct nvkm_cstate *cstate = NULL;
++	struct nvbios_cstepX cstepX;
++	u8  ver, hdr;
++	u32 data;
++
++	data = nvbios_cstepXp(bios, idx, &ver, &hdr, &cstepX);
++	if (!data)
++		return -ENOENT;
++
++	if (volt && nvkm_volt_map_min(volt, cstepX.voltage) > volt->max_uv)
++		return -EINVAL;
++
++	cstate = kzalloc_obj(*cstate);
++	if (!cstate)
++		return -ENOMEM;
++
++	*cstate = pstate->base;
++	cstate->voltage = cstepX.voltage;
++	cstate->id = idx;
++
++	while (domain && domain->name != nv_clk_src_max) {
++		if (domain->flags & NVKM_CLK_DOM_FLAG_CORE) {
++			u32 freq = nvkm_clk_adjust(clk, true, pstate->pstate,
++						   domain->bios, cstepX.freq);
++			cstate->domain[domain->name] = freq;
++		}
++		domain++;
++	}
++
++	list_add(&cstate->head, &pstate->list);
++	return 0;
++}
++
++/******************************************************************************
++ * P-States
++ *****************************************************************************/
++static int
++nvkm_pstate_prog(struct nvkm_clk *clk, int pstatei)
++{
++	struct nvkm_subdev *subdev = &clk->subdev;
++	struct nvkm_fb *fb = subdev->device->fb;
++	struct nvkm_pci *pci = subdev->device->pci;
++	struct nvkm_pstate *pstate;
++	int ret, idx = 0;
++
++	list_for_each_entry(pstate, &clk->states, head) {
++		if (idx++ == pstatei)
++			break;
++	}
++
++	nvkm_debug(subdev, "setting performance state %d\n", pstatei);
++	clk->pstate = pstatei;
++
++	nvkm_pcie_set_link(pci, pstate->pcie_speed, pstate->pcie_width);
++
++	if (fb && fb->ram && fb->ram->func->calc) {
++		struct nvkm_ram *ram = fb->ram;
++		int khz = pstate->base.domain[nv_clk_src_mem];
++		do {
++			ret = ram->func->calc(ram, khz);
++			if (ret == 0)
++				ret = ram->func->prog(ram);
++		} while (ret > 0);
++		ram->func->tidy(ram);
++	}
++
++	return nvkm_cstate_prog(clk, pstate, NVKM_CLK_CSTATE_HIGHEST);
++}
++
++static void
++nvkm_pstate_work(struct work_struct *work)
++{
++	struct nvkm_clk *clk = container_of(work, typeof(*clk), work);
++	struct nvkm_subdev *subdev = &clk->subdev;
++	int pstate;
++
++	if (!atomic_xchg(&clk->waiting, 0))
++		return;
++	clk->pwrsrc = power_supply_is_system_supplied();
++
++	nvkm_trace(subdev, "P %d PWR %d U(AC) %d U(DC) %d A %d T %d°C D %d\n",
++		   clk->pstate, clk->pwrsrc, clk->ustate_ac, clk->ustate_dc,
++		   clk->astate, clk->temp, clk->dstate);
++
++	pstate = clk->pwrsrc ? clk->ustate_ac : clk->ustate_dc;
++	if (clk->state_nr && pstate != -1) {
++		pstate = (pstate < 0) ? clk->astate : pstate;
++		pstate = min(pstate, clk->state_nr - 1);
++		pstate = max(pstate, clk->dstate);
++	} else {
++		pstate = clk->pstate = -1;
++	}
++
++	nvkm_trace(subdev, "-> %d\n", pstate);
++	if (pstate != clk->pstate) {
++		int ret = nvkm_pstate_prog(clk, pstate);
++		if (ret) {
++			nvkm_error(subdev, "error setting pstate %d: %d\n",
++				   pstate, ret);
++		}
++	}
++
++	wake_up_all(&clk->wait);
++}
++
++static int
++nvkm_pstate_calc(struct nvkm_clk *clk, bool wait)
++{
++	atomic_set(&clk->waiting, 1);
++	schedule_work(&clk->work);
++	if (wait)
++		wait_event(clk->wait, !atomic_read(&clk->waiting));
++	return 0;
++}
++
++static void
++nvkm_pstate_info(struct nvkm_clk *clk, struct nvkm_pstate *pstate)
++{
++	const struct nvkm_domain *clock = clk->domains - 1;
++	struct nvkm_cstate *cstate;
++	struct nvkm_subdev *subdev = &clk->subdev;
++	char info[3][32] = { "", "", "" };
++	char name[4] = "--";
++	int i = -1;
++
++	if (pstate->pstate != 0xff)
++		snprintf(name, sizeof(name), "%02x", pstate->pstate);
++
++	while ((++clock)->name != nv_clk_src_max) {
++		u32 lo = pstate->base.domain[clock->name];
++		u32 hi = lo;
++		if (hi == 0)
++			continue;
++
++		nvkm_debug(subdev, "%02x: %10d KHz\n", clock->name, lo);
++		list_for_each_entry(cstate, &pstate->list, head) {
++			u32 freq = cstate->domain[clock->name];
++			lo = min(lo, freq);
++			hi = max(hi, freq);
++			nvkm_debug(subdev, "%10d KHz\n", freq);
++		}
++
++		if (clock->mname && ++i < ARRAY_SIZE(info)) {
++			lo /= clock->mdiv;
++			hi /= clock->mdiv;
++			if (lo == hi) {
++				snprintf(info[i], sizeof(info[i]), "%s %d MHz",
++					 clock->mname, lo);
++			} else {
++				snprintf(info[i], sizeof(info[i]),
++					 "%s %d-%d MHz", clock->mname, lo, hi);
++			}
++		}
++	}
++
++	nvkm_debug(subdev, "%s: %s %s %s\n", name, info[0], info[1], info[2]);
++}
++
++static void
++nvkm_pstate_del(struct nvkm_pstate *pstate)
++{
++	struct nvkm_cstate *cstate, *temp;
++
++	list_for_each_entry_safe(cstate, temp, &pstate->list, head) {
++		nvkm_cstate_del(cstate);
++	}
++
++	list_del(&pstate->head);
++	kfree(pstate);
++}
++
++static int
++nvkm_pstate_new(struct nvkm_clk *clk, int idx)
++{
++	struct nvkm_bios *bios = clk->subdev.device->bios;
++	const struct nvkm_domain *domain = clk->domains - 1;
++	struct nvkm_pstate *pstate;
++	struct nvkm_cstate *cstate;
++	struct nvbios_cstepE cstepE;
++	struct nvbios_perfE perfE;
++	u8  ver, hdr, cnt, len;
++	u32 data;
++
++	data = nvbios_perfEp(bios, idx, &ver, &hdr, &cnt, &len, &perfE);
++	if (!data)
++		return -EINVAL;
++	if (perfE.pstate == 0xff)
++		return 0;
++
++	pstate = kzalloc_obj(*pstate);
++	if (!pstate)
++		return -ENOMEM;
++
++	INIT_LIST_HEAD(&pstate->list);
++
++	pstate->pstate = perfE.pstate;
++	pstate->fanspeed = perfE.fanspeed;
++	pstate->pcie_speed = perfE.pcie_speed;
++	pstate->pcie_width = perfE.pcie_width;
++	cstate = &pstate->base;
++	cstate->voltage = perfE.voltage;
++	cstate->domain[nv_clk_src_core] = perfE.core;
++	cstate->domain[nv_clk_src_shader] = perfE.shader;
++	cstate->domain[nv_clk_src_mem] = perfE.memory;
++	cstate->domain[nv_clk_src_vdec] = perfE.vdec;
++	cstate->domain[nv_clk_src_dom6] = perfE.disp;
++
++	while (ver >= 0x40 && (++domain)->name != nv_clk_src_max) {
++		struct nvbios_perfS perfS;
++		u8  sver = ver, shdr = hdr;
++		u32 perfSe = nvbios_perfSp(bios, data, domain->bios,
++					  &sver, &shdr, cnt, len, &perfS);
++		if (perfSe == 0 || sver != 0x40)
++			continue;
++
++		if (domain->flags & NVKM_CLK_DOM_FLAG_CORE) {
++			perfS.v40.freq = nvkm_clk_adjust(clk, false,
++							 pstate->pstate,
++							 domain->bios,
++							 perfS.v40.freq);
++		}
++
++		cstate->domain[domain->name] = perfS.v40.freq;
++	}
++
++	data = nvbios_cstepEm(bios, pstate->pstate, &ver, &hdr, &cstepE);
++	if (data) {
++		int idx = cstepE.index;
++		do {
++			nvkm_cstate_new(clk, idx, pstate);
++		} while(idx--);
++	}
++
++	nvkm_pstate_info(clk, pstate);
++	list_add_tail(&pstate->head, &clk->states);
++	clk->state_nr++;
++	return 0;
++}
++
++/******************************************************************************
++ * Adjustment triggers
++ *****************************************************************************/
++static int
++nvkm_clk_ustate_update(struct nvkm_clk *clk, int req)
++{
++	struct nvkm_pstate *pstate;
++	bool found = false;
++	int i = 0;
++
++	if (!clk->allow_reclock)
++		return -ENOSYS;
++
++	if (req != -1 && req != -2) {
++		list_for_each_entry(pstate, &clk->states, head) {
++			if (pstate->pstate == req) {
++				found = true;
++				break;
++			}
++			i++;
++		}
++
++		if (!found)
++			return -EINVAL;
++		req = i;
++	}
++
++	return req + 2;
++}
++
++static int
++nvkm_clk_nstate(struct nvkm_clk *clk, const char *mode, int arglen)
++{
++	int ret = 1;
++
++	if (clk->allow_reclock && !strncasecmpz(mode, "auto", arglen))
++		return -2;
++
++	if (strncasecmpz(mode, "disabled", arglen)) {
++		char save = mode[arglen];
++		long v;
++
++		((char *)mode)[arglen] = '\0';
++		if (!kstrtol(mode, 0, &v)) {
++			ret = nvkm_clk_ustate_update(clk, v);
++			if (ret < 0)
++				ret = 1;
++		}
++		((char *)mode)[arglen] = save;
++	}
++
++	return ret - 2;
++}
++
++int
++nvkm_clk_ustate(struct nvkm_clk *clk, int req, int pwr)
++{
++	int ret = nvkm_clk_ustate_update(clk, req);
++	if (ret >= 0) {
++		if (ret -= 2, pwr) clk->ustate_ac = ret;
++		else		   clk->ustate_dc = ret;
++		return nvkm_pstate_calc(clk, true);
++	}
++	return ret;
++}
++
++int
++nvkm_clk_astate(struct nvkm_clk *clk, int req, int rel, bool wait)
++{
++	if (!rel) clk->astate  = req;
++	if ( rel) clk->astate += rel;
++	clk->astate = min(clk->astate, clk->state_nr - 1);
++	clk->astate = max(clk->astate, 0);
++	return nvkm_pstate_calc(clk, wait);
++}
++
++int
++nvkm_clk_tstate(struct nvkm_clk *clk, u8 temp)
++{
++	if (clk->temp == temp)
++		return 0;
++	clk->temp = temp;
++	return nvkm_pstate_calc(clk, false);
++}
++
++int
++nvkm_clk_dstate(struct nvkm_clk *clk, int req, int rel)
++{
++	if (!rel) clk->dstate  = req;
++	if ( rel) clk->dstate += rel;
++	clk->dstate = min(clk->dstate, clk->state_nr - 1);
++	clk->dstate = max(clk->dstate, 0);
++	return nvkm_pstate_calc(clk, true);
++}
++
++int
++nvkm_clk_pwrsrc(struct nvkm_device *device)
++{
++	if (device->clk)
++		return nvkm_pstate_calc(device->clk, false);
++	return 0;
++}
++
++/******************************************************************************
++ * subdev base class implementation
++ *****************************************************************************/
++
++int
++nvkm_clk_read(struct nvkm_clk *clk, enum nv_clk_src src)
++{
++	return clk->func->read(clk, src);
++}
++
++static int
++nvkm_clk_fini(struct nvkm_subdev *subdev, enum nvkm_suspend_state suspend)
++{
++	struct nvkm_clk *clk = nvkm_clk(subdev);
++	flush_work(&clk->work);
++	if (clk->func->fini)
++		clk->func->fini(clk);
++	return 0;
++}
++
++static int
++nvkm_clk_init(struct nvkm_subdev *subdev)
++{
++	struct nvkm_clk *clk = nvkm_clk(subdev);
++	const struct nvkm_domain *clock = clk->domains;
++	int ret;
++
++	memset(&clk->bstate, 0x00, sizeof(clk->bstate));
++	INIT_LIST_HEAD(&clk->bstate.list);
++	clk->bstate.pstate = 0xff;
++
++	while (clock->name != nv_clk_src_max) {
++		ret = nvkm_clk_read(clk, clock->name);
++		if (ret < 0) {
++			nvkm_error(subdev, "%02x freq unknown\n", clock->name);
++			return ret;
++		}
++		clk->bstate.base.domain[clock->name] = ret;
++		clock++;
++	}
++
++	nvkm_pstate_info(clk, &clk->bstate);
++
++	if (clk->func->init)
++		return clk->func->init(clk);
++
++	clk->astate = clk->state_nr - 1;
++	clk->dstate = 0;
++	clk->pstate = -1;
++	clk->temp = 90; /* reasonable default value */
++	nvkm_pstate_calc(clk, true);
++	return 0;
++}
++
++static void *
++nvkm_clk_dtor(struct nvkm_subdev *subdev)
++{
++	struct nvkm_clk *clk = nvkm_clk(subdev);
++	struct nvkm_pstate *pstate, *temp;
++
++	/* Early return if the pstates have been provided statically */
++	if (clk->func->pstates)
++		return clk;
++
++	list_for_each_entry_safe(pstate, temp, &clk->states, head) {
++		nvkm_pstate_del(pstate);
++	}
++
++	return clk;
++}
++
++static const struct nvkm_subdev_func
++nvkm_clk = {
++	.dtor = nvkm_clk_dtor,
++	.init = nvkm_clk_init,
++	.fini = nvkm_clk_fini,
++};
++
++int
++nvkm_clk_ctor(const struct nvkm_clk_func *func, struct nvkm_device *device,
++	      enum nvkm_subdev_type type, int inst, bool allow_reclock, struct nvkm_clk *clk)
++{
++	struct nvkm_subdev *subdev = &clk->subdev;
++	struct nvkm_bios *bios = device->bios;
++	int ret, idx, arglen;
++	const char *mode;
++	struct nvbios_vpstate_header h;
++
++	nvkm_subdev_ctor(&nvkm_clk, device, type, inst, subdev);
++
++	if (bios && !nvbios_vpstate_parse(bios, &h)) {
++		struct nvbios_vpstate_entry base, boost;
++		if (!nvbios_vpstate_entry(bios, &h, h.boost_id, &boost))
++			clk->boost_khz = boost.clock_mhz * 1000;
++		if (!nvbios_vpstate_entry(bios, &h, h.base_id, &base))
++			clk->base_khz = base.clock_mhz * 1000;
++	}
++
++	clk->func = func;
++	INIT_LIST_HEAD(&clk->states);
++	clk->domains = func->domains;
++	clk->ustate_ac = -1;
++	clk->ustate_dc = -1;
++	clk->allow_reclock = allow_reclock;
++
++	INIT_WORK(&clk->work, nvkm_pstate_work);
++	init_waitqueue_head(&clk->wait);
++	atomic_set(&clk->waiting, 0);
++
++	/* If no pstates are provided, try and fetch them from the BIOS */
++	if (!func->pstates) {
++		idx = 0;
++		do {
++			ret = nvkm_pstate_new(clk, idx++);
++		} while (ret == 0);
++	} else {
++		for (idx = 0; idx < func->nr_pstates; idx++)
++			list_add_tail(&func->pstates[idx].head, &clk->states);
++		clk->state_nr = func->nr_pstates;
++	}
++
++	mode = nvkm_stropt(device->cfgopt, "NvClkMode", &arglen);
++	if (mode) {
++		clk->ustate_ac = nvkm_clk_nstate(clk, mode, arglen);
++		clk->ustate_dc = nvkm_clk_nstate(clk, mode, arglen);
++	}
++
++	mode = nvkm_stropt(device->cfgopt, "NvClkModeAC", &arglen);
++	if (mode)
++		clk->ustate_ac = nvkm_clk_nstate(clk, mode, arglen);
++
++	mode = nvkm_stropt(device->cfgopt, "NvClkModeDC", &arglen);
++	if (mode)
++		clk->ustate_dc = nvkm_clk_nstate(clk, mode, arglen);
++
++	clk->boost_mode = nvkm_longopt(device->cfgopt, "NvBoost",
++				       NVKM_CLK_BOOST_NONE);
++	return 0;
++}
++
++int
++nvkm_clk_new_(const struct nvkm_clk_func *func, struct nvkm_device *device,
++	      enum nvkm_subdev_type type, int inst, bool allow_reclock, struct nvkm_clk **pclk)
++{
++	if (!(*pclk = kzalloc_obj(**pclk)))
++		return -ENOMEM;
++	return nvkm_clk_ctor(func, device, type, inst, allow_reclock, *pclk);
++}
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/clk/gf100.c nouveau-source/nvkm/subdev/clk/gf100.c
---- orig/nvkm/subdev/clk/gf100.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nvkm/subdev/clk/gf100.c	2026-10-27 15:57:29.220262970 +0200
+--- orig/nvkm/subdev/clk/gf100.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nvkm/subdev/clk/gf100.c	2026-10-30 17:34:17.347850933 +0100
 @@ -91,6 +91,9 @@
  		return 0;
  	}
@@ -405,8 +3053,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
 +	return nvkm_clk_ctor(&gf100_clk, device, type, inst, true, &clk->base);
  }
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/fb/fexec_code.inc nouveau-source/nvkm/subdev/fb/fexec_code.inc
---- orig/nvkm/subdev/fb/fexec_code.inc	1970-01-01 02:00:00.000000000 +0200
-+++ nouveau-source/nvkm/subdev/fb/fexec_code.inc	2026-10-27 15:57:29.221206986 +0200
+--- orig/nvkm/subdev/fb/fexec_code.inc	1970-01-01 01:00:00.000000000 +0100
++++ nouveau-source/nvkm/subdev/fb/fexec_code.inc	2026-10-30 17:34:17.411583835 +0100
 @@ -0,0 +1,243 @@
 +/* Native resident Falcon executor for Fermi GF106 DDR3 reclocking */
 +static const u32 fexec_code[] = {
@@ -652,8 +3300,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
 +	0x00000000, 0x00000000, 0x00000000, 0x00000000,
 +};
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/fb/ramfuc.h nouveau-source/nvkm/subdev/fb/ramfuc.h
---- orig/nvkm/subdev/fb/ramfuc.h	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nvkm/subdev/fb/ramfuc.h	2026-10-27 15:57:29.221385091 +0200
+--- orig/nvkm/subdev/fb/ramfuc.h	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nvkm/subdev/fb/ramfuc.h	2026-10-30 17:34:17.412144842 +0100
 @@ -4,10 +4,15 @@
  #include <subdev/fb.h>
  #include <subdev/pmu.h>
@@ -861,8 +3509,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  
  #define ram_init(s,p)        ramfuc_init(&(s)->base, (p))
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/fb/ramgf100.c nouveau-source/nvkm/subdev/fb/ramgf100.c
---- orig/nvkm/subdev/fb/ramgf100.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nvkm/subdev/fb/ramgf100.c	2026-10-27 15:58:34.633650849 +0200
+--- orig/nvkm/subdev/fb/ramgf100.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nvkm/subdev/fb/ramgf100.c	2026-10-30 17:34:17.462584700 +0100
 @@ -27,6 +27,7 @@
  
  #include <core/option.h>
@@ -1479,8 +4127,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  }
  
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/pmu/fuc/gf100.fuc3.h nouveau-source/nvkm/subdev/pmu/fuc/gf100.fuc3.h
---- orig/nvkm/subdev/pmu/fuc/gf100.fuc3.h	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nvkm/subdev/pmu/fuc/gf100.fuc3.h	2026-10-27 15:57:29.224046412 +0200
+--- orig/nvkm/subdev/pmu/fuc/gf100.fuc3.h	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nvkm/subdev/pmu/fuc/gf100.fuc3.h	2026-10-30 17:34:17.522585717 +0100
 @@ -1260,7 +1260,7 @@
  	0xb8525413,
  	0x0bf406e1,
@@ -1506,8 +4154,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  	0x17f100f8,
  	0x14b60080,
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/pmu/gt215.c nouveau-source/nvkm/subdev/pmu/gt215.c
---- orig/nvkm/subdev/pmu/gt215.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nvkm/subdev/pmu/gt215.c	2026-10-27 15:57:29.225217510 +0200
+--- orig/nvkm/subdev/pmu/gt215.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nvkm/subdev/pmu/gt215.c	2026-10-30 17:34:17.550586191 +0100
 @@ -23,6 +23,7 @@
   */
  #include "priv.h"
@@ -2097,8 +4745,8 @@ diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules
  }
  
 diff -ruN -x '*.o' -x '*.ko' -x '*.cmd' -x '*.mod*' -x Module.symvers -x modules.order -x dkms.conf -x '.*' orig/nvkm/subdev/pmu/memx.c nouveau-source/nvkm/subdev/pmu/memx.c
---- orig/nvkm/subdev/pmu/memx.c	2026-06-12 01:03:26.000000000 +0300
-+++ nouveau-source/nvkm/subdev/pmu/memx.c	2026-10-27 15:57:29.226731213 +0200
+--- orig/nvkm/subdev/pmu/memx.c	2026-10-16 02:26:10.000000000 +0200
++++ nouveau-source/nvkm/subdev/pmu/memx.c	2026-10-30 17:34:17.615587293 +0100
 @@ -61,9 +61,11 @@
  	memx->size = reply[1];
  
